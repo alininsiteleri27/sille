@@ -977,3 +977,465 @@ h1 {
         transform: translateX(-50%) translateY(-30px) rotate(360deg);
     }
 }
+
+/* ==================== FPS ARM & HAND SYSTEM ==================== */
+
+/* FPS Kol Container */
+.fps-arm {
+    position: fixed;
+    bottom: -100px;
+    right: -50px;
+    width: 400px;
+    height: 600px;
+    pointer-events: none;
+    z-index: 50;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: transform 0.3s ease-out;
+}
+
+/* Shoulder - Omuz */
+.arm-shoulder {
+    position: absolute;
+    bottom: 50px;
+    right: 250px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(ellipse at center, #d4a574 0%, #c49563 100%);
+    border-radius: 50%;
+    box-shadow: inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+        0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Upper Arm - Üst Kol */
+.arm-upper {
+    position: absolute;
+    bottom: 150px;
+    right: 180px;
+    width: 100px;
+    height: 220px;
+    background: linear-gradient(135deg, #d4a574 0%, #c49563 50%, #b8885c 100%);
+    border-radius: 50px 50px 40px 40px;
+    transform: rotate(-25deg);
+    transform-origin: bottom center;
+    box-shadow: inset -8px -8px 20px rgba(0, 0, 0, 0.25),
+        8px 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.arm-upper::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 30%;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), transparent);
+    border-radius: 50%;
+    filter: blur(8px);
+}
+
+/* Forearm - Ön Kol */
+.arm-forearm {
+    position: absolute;
+    bottom: 80px;
+    right: 80px;
+    width: 90px;
+    height: 200px;
+    background: linear-gradient(145deg, #d4a574 0%, #c49563 50%, #b8885c 100%);
+    border-radius: 45px 45px 35px 35px;
+    transform: rotate(10deg);
+    transform-origin: top center;
+    box-shadow: inset -6px -6px 15px rgba(0, 0, 0, 0.2),
+        6px 6px 25px rgba(0, 0, 0, 0.3);
+}
+
+.arm-forearm::after {
+    content: '';
+    position: absolute;
+    top: 30%;
+    right: 15%;
+    width: 25%;
+    height: 40%;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.12), transparent);
+    border-radius: 50%;
+    filter: blur(6px);
+}
+
+/* Hand - El */
+.arm-hand {
+    position: absolute;
+    bottom: 20px;
+    right: 40px;
+    width: 120px;
+    height: 140px;
+    transform: rotate(5deg);
+    transform-origin: bottom center;
+    filter: drop-shadow(5px 10px 20px rgba(0, 0, 0, 0.4));
+}
+
+.hand-palm {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    width: 80px;
+    height: 100px;
+    background: linear-gradient(135deg, #deb88a 0%, #c49563 100%);
+    border-radius: 40px 40px 20px 20px;
+    box-shadow: inset -4px -4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Parmaklar */
+.finger {
+    position: absolute;
+    background: linear-gradient(180deg, #deb88a 0%, #c49563 100%);
+    border-radius: 15px 15px 10px 10px;
+    box-shadow: inset -2px -2px 8px rgba(0, 0, 0, 0.15),
+        2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.finger-thumb {
+    bottom: 30px;
+    left: 0;
+    width: 35px;
+    height: 60px;
+    transform: rotate(-35deg);
+    border-radius: 18px 18px 12px 12px;
+}
+
+.finger-index {
+    top: 0;
+    left: 25px;
+    width: 22px;
+    height: 75px;
+}
+
+.finger-middle {
+    top: -5px;
+    left: 50px;
+    width: 22px;
+    height: 80px;
+}
+
+.finger-ring {
+    top: 0;
+    left: 75px;
+    width: 20px;
+    height: 70px;
+}
+
+.finger-pinky {
+    top: 10px;
+    right: 5px;
+    width: 18px;
+    height: 60px;
+}
+
+/* Parmak detayları */
+.finger::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 30%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    border-radius: 50%;
+    filter: blur(3px);
+}
+
+/* İdle Animasyon -El hafif sallanıyor */
+.fps-arm.idle {
+    animation: armIdle 4s ease-in-out infinite;
+}
+
+@keyframes armIdle {
+
+    0%,
+    100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-10px) translateX(-5px) rotate(-1deg);
+    }
+
+    50% {
+        transform: translateY(-15px) translateX(0) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(-10px) translateX(5px) rotate(1deg);
+    }
+}
+
+/* Vuruş Animasyonu - El hızlıca hareket eder */
+.fps-arm.punching {
+    animation: armPunch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes armPunch {
+    0% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+
+    30% {
+        transform: translateX(-150px) translateY(-100px) rotate(-20deg) scale(1.1);
+    }
+
+    60% {
+        transform: translateX(-180px) translateY(-120px) rotate(-25deg) scale(1.15);
+    }
+
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+}
+
+/* Mouse Tracking - El mouse'u takip eder */
+.fps-arm.tracking {
+    transition: transform 0.2s ease-out;
+}
+
+/* ==================== EYE CALIBRATION PANEL ==================== */
+.calibration-btn {
+    margin-left: 15px;
+    padding: 8px 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 200, 100, 0.3), rgba(255, 150, 50, 0.3));
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.calibration-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 200, 100, 0.5), rgba(255, 150, 50, 0.5));
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.calibration-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.calibration-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel-content {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    padding: 40px;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 500px;
+}
+
+.panel-content h2 {
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.panel-content p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+}
+
+.eye-markers {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.marker-info {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 1.1rem;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.save-btn,
+.cancel-btn {
+    padding: 12px 30px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #4ade80, #3b82f6);
+    color: #fff;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(74, 222, 128, 0.5);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+}
+
+/* Eye Click Marker */
+.eye-click-marker {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #4ade80;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100;
+    animation: markerPulse 1s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+/* ==================== SCREEN SHAKE EFFECT ==================== */
+@keyframes screenShake {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    10% {
+        transform: translate(-5px, -5px) rotate(-0.5deg);
+    }
+
+    20% {
+        transform: translate(5px, 5px) rotate(0.5deg);
+    }
+
+    30% {
+        transform: translate(-5px, 5px) rotate(-0.5deg);
+    }
+
+    40% {
+        transform: translate(5px, -5px) rotate(0.5deg);
+    }
+
+    50% {
+        transform: translate(-3px, -3px) rotate(-0.3deg);
+    }
+
+    60% {
+        transform: translate(3px, 3px) rotate(0.3deg);
+    }
+
+    70% {
+        transform: translate(-2px, 2px) rotate(-0.2deg);
+    }
+
+    80% {
+        transform: translate(2px, -2px) rotate(0.2deg);
+    }
+
+    90% {
+        transform: translate(-1px, -1px) rotate(-0.1deg);
+    }
+}
+
+.container.shake {
+    animation: screenShake 0.5s ease-in-out;
+}
+
+/* ==================== IMPACT WAVE EFFECT ==================== */
+.impact-wave {
+    position: fixed;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    animation: waveExpand 0.6s ease-out forwards;
+}
+
+@keyframes waveExpand {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: 1;
+        border-width: 5px;
+    }
+
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+        border-width: 1px;
+    }
+}
+
+/* ==================== PREMIUM ENHANCED STYLES ==================== */
+.container {
+    position: relative;
+    filter: drop-shadow(0 0 50px rgba(102, 126, 234, 0.3));
+}
+
+header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(20px);
+    padding: 25px;
+    border-radius: 25px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.3));
+}
+
+/* Enhanced particle effects */
+.particle {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+}
