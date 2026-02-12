@@ -244,45 +244,60 @@ const soundSystem = new SoundSystem();
 
 // ==================== Particle System ====================
 function createParticles(x, y, power) {
-    const particleCount = Math.floor(power / 10) + 5;
-    const particles = ['⭐', '💥', '💫', '✨', '💦', '💢'];
+    const particleCount = Math.floor(power / 8) + 8;
+    const particles = ['⭐', '💥', '💫', '✨', '💦', '💢', '🌟', '✴️', '💨'];
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.textContent = particles[Math.floor(Math.random() * particles.length)];
 
-        // Random trajectory
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 50 + Math.random() * (power * 2);
-        const tx = Math.cos(angle) * distance;
-        const ty = Math.sin(angle) * distance;
-        const rotation = Math.random() * 720 - 360;
+        // More realistic physics-based trajectory
+        const angle = (Math.random() * Math.PI * 1.5) + (Math.PI * 0.25); // Upward arc
+        const velocity = (50 + Math.random() * power * 2.5);
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity - (Math.random() * 30); // Add upward bias
+        const rotation = (Math.random() * 1080) - 540; // Multiple rotations
 
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
+        // Random size based on power
+        const size = 18 + Math.random() * (power / 4);
+
+        particle.style.left = x + (Math.random() * 40 - 20) + 'px';
+        particle.style.top = y + (Math.random() * 40 - 20) + 'px';
         particle.style.setProperty('--tx', tx + 'px');
         particle.style.setProperty('--ty', ty + 'px');
         particle.style.setProperty('--rot', rotation + 'deg');
-        particle.style.fontSize = (16 + Math.random() * 20) + 'px';
+        particle.style.fontSize = size + 'px';
+
+        // Add subtle delay for more realistic burst effect
+        particle.style.animationDelay = (Math.random() * 0.1) + 's';
+        particle.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
 
         particleContainer.appendChild(particle);
 
         // Remove after animation
         setTimeout(() => {
             particle.remove();
-        }, 1000);
+        }, 1200);
     }
 }
 
 // ==================== Visual Effects ====================
-function showRedness(power) {
-    const intensity = Math.min(power / 100, 1);
+function showRedness(power, hitX, hitY) {
+    const container = faceContainer.getBoundingClientRect();
+    const relativeX = ((hitX / container.width) * 100);
+    const relativeY = ((hitY / container.height) * 100);
+
+    // Create dynamic redness based on hit location
+    const intensity = Math.min(power / 80, 1);
+    redness.style.background = `radial-gradient(circle at ${relativeX}% ${relativeY}%, rgba(255, 0, 0, ${0.7 * intensity}) 0%, rgba(255, 80, 80, ${0.5 * intensity}) 20%, rgba(255, 0, 0, 0) 50%)`;
     redness.style.opacity = intensity;
 
+    // Fadeout timing based on power
+    const fadeTime = 600 + (power * 8);
     setTimeout(() => {
         redness.style.opacity = '0';
-    }, 500 + (power * 5));
+    }, fadeTime);
 }
 
 function blinkEyes() {
@@ -373,9 +388,9 @@ function handleSlap(x, y, power) {
     currentPowerEl.textContent = power + '%';
     powerFill.style.width = power + '%';
 
-    // Visual effects
+    // Visual effects with position-aware redness
     animateFace(power);
-    showRedness(power);
+    showRedness(power, x, y);
     blinkEyes();
     showHitIndicator(power);
     createParticles(x, y, power);
@@ -384,9 +399,9 @@ function handleSlap(x, y, power) {
     soundSystem.playSlap(power);
     setTimeout(() => soundSystem.playImpact(power), 50);
 
-    // Random additional blink
-    if (Math.random() > 0.5) {
-        setTimeout(blinkEyes, 200 + Math.random() * 300);
+    // Random additional blink for realism
+    if (Math.random() > 0.4) {
+        setTimeout(blinkEyes, 200 + Math.random() * 400);
     }
 
     // Reset animation lock
