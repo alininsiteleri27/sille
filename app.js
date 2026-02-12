@@ -5,7 +5,9 @@ const gameState = {
     currentPower: 0,
     isAnimating: false,
     touchStart: { x: 0, y: 0, time: 0 },
-    touchEnd: { x: 0, y: 0, time: 0 }
+    touchEnd: { x: 0, y: 0, time: 0 },
+    exhaustion: 0, // 0-100, increases with each slap
+    selectedHand: 'female-light'
 };
 
 // ==================== DOM Elements ====================
@@ -24,6 +26,10 @@ const uploadSection = document.getElementById('uploadSection');
 const uploadBtn = document.getElementById('uploadBtn');
 const useDefaultBtn = document.getElementById('useDefaultBtn');
 const imageUpload = document.getElementById('imageUpload');
+const handTypeSelect = document.getElementById('handType');
+const handSlap = document.getElementById('handSlap');
+const sweatContainer = document.getElementById('sweatContainer');
+const tongue = document.getElementById('tongue');
 
 // ==================== Image Upload System ====================
 function createDefaultFace() {
@@ -169,6 +175,113 @@ useDefaultBtn.addEventListener('click', () => {
     const defaultFace = createDefaultFace();
     loadImage(defaultFace);
 });
+
+// ==================== Hand Selection System ====================
+const handEmojis = {
+    'female-light': '✋🏻',
+    'female-medium': '✋🏽',
+    'male-light': '✋🏻',
+    'male-medium': '✋🏽',
+    'male-hairy': '✋🏿'
+};
+
+handTypeSelect.addEventListener('change', (e) => {
+    gameState.selectedHand = e.target.value;
+    handSlap.querySelector('.hand-emoji').textContent = handEmojis[gameState.selectedHand];
+});
+
+// ==================== Sweat System ====================
+function createSweatDrops(power) {
+    const dropCount = Math.floor(power / 20) + 2;
+
+    for (let i = 0; i < dropCount; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'sweat-drop';
+
+        // Random position on forehead area
+        drop.style.left = (30 + Math.random() * 40) + '%';
+        drop.style.top = (15 + Math.random() * 15) + '%';
+        drop.style.animationDelay = (Math.random() * 0.3) + 's';
+
+        sweatContainer.appendChild(drop);
+
+        setTimeout(() => drop.remove(), 1500);
+    }
+}
+
+// ==================== Tongue System ====================
+function showTongue() {
+    tongue.classList.remove('hide');
+    tongue.classList.add('show');
+
+    setTimeout(() => {
+        tongue.classList.remove('show');
+        tongue.classList.add('hide');
+    }, 2000);
+}
+
+// ==================== Exhaustion System ====================
+function updateExhaustion(power) {
+    // Increase exhaustion based on power
+    gameState.exhaustion = Math.min(gameState.exhaustion + (power / 10), 100);
+
+    // Visual feedback
+    if (gameState.exhaustion > 70) {
+        faceContainer.classList.add('exhausted');
+        createSweatDrops(gameState.exhaustion);
+
+        if (gameState.exhaustion > 90) {
+            showTongue();
+            createDizzyStars();
+        }
+    }
+
+    // Gradual recovery
+    setTimeout(() => {
+        gameState.exhaustion = Math.max(gameState.exhaustion - 5, 0);
+        if (gameState.exhaustion < 70) {
+            faceContainer.classList.remove('exhausted');
+        }
+    }, 2000);
+}
+
+function createDizzyStars() {
+    const dizzy = document.createElement('div');
+    dizzy.className = 'dizzy-stars show';
+    dizzy.textContent = '⭐✨💫';
+    faceContainer.appendChild(dizzy);
+
+    setTimeout(() => dizzy.remove(), 3000);
+}
+
+// ==================== Hand Slap Animation ====================
+function animateHand(startX, startY, endX, endY, power) {
+    // Set hand emoji
+    const handEmoji = handSlap.querySelector('.hand-emoji');
+    handEmoji.textContent = handEmojis[gameState.selectedHand];
+
+    // Calculate angle and distance
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    // Set CSS variables for animation
+    handSlap.style.setProperty('--startX', (startX - 40) + 'px');
+    handSlap.style.setProperty('--startY', (startY - 40) + 'px');
+    handSlap.style.setProperty('--endX', (endX - 40) + 'px');
+    handSlap.style.setProperty('--endY', (endY - 40) + 'px');
+    handSlap.style.setProperty('--rotation', (angle + 90) + 'deg');
+
+    // Trigger animation
+    handSlap.classList.remove('active');
+    void handSlap.offsetWidth; // Force reflow
+    handSlap.classList.add('active');
+
+    // Remove animation class
+    setTimeout(() => {
+        handSlap.classList.remove('active');
+    }, 500);
+}
 
 // ==================== Sound System ====================
 class SoundSystem {
@@ -395,6 +508,14 @@ function handleSlap(x, y, power) {
     showHitIndicator(power);
     createParticles(x, y, power);
 
+    // NEW: Exhaustion and reactions
+    updateExhaustion(power);
+
+    // Show sweat if power is high
+    if (power > 50) {
+        createSweatDrops(power);
+    }
+
     // Sound effects
     soundSystem.playSlap(power);
     setTimeout(() => soundSystem.playImpact(power), 50);
@@ -454,6 +575,9 @@ document.addEventListener('mouseup', (e) => {
 
     // Only register as slap if there was movement and minimum power
     if (power > 5) {
+        // Animate hand
+        animateHand(mouseStartX, mouseStartY, endX, endY, power);
+
         const rect = faceContainer.getBoundingClientRect();
         const localX = endX - rect.left;
         const localY = endY - rect.top;
@@ -509,6 +633,15 @@ faceContainer.addEventListener('touchend', (e) => {
 
     // Only register as slap if there was movement and minimum power
     if (power > 5) {
+        // Animate hand
+        animateHand(
+            gameState.touchStart.x,
+            gameState.touchStart.y,
+            gameState.touchEnd.x,
+            gameState.touchEnd.y,
+            power
+        );
+
         const rect = faceContainer.getBoundingClientRect();
         const localX = gameState.touchEnd.x - rect.left;
         const localY = gameState.touchEnd.y - rect.top;
