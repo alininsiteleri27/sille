@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokat Atma Oyunu 👋</title>
+    <meta name="description" content="Gerçekçi tokat atma oyunu - Hızlı kaydır, güçlü tokat at!">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Başlık ve Skor -->
+        <header>
+            <h1>👋 TOKAT ATMA OYUNU</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Toplam Tokat:</span>
+                    <span class="stat-value" id="slapCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">En Güçlü:</span>
+                    <span class="stat-value" id="maxPower">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Güç:</span>
+                    <span class="stat-value" id="currentPower">0%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Oyun Alanı -->
+        <div class="game-area">
+            <!-- Yüz Container -->
+            <div id="faceContainer" class="face-container">
+                <!-- Fotoğraf Yükleme Bölümü -->
+                <div id="uploadSection" class="upload-section">
+                    <div class="upload-box">
+                        <div class="upload-icon">📸</div>
+                        <h2>Fotoğraf Yükle</h2>
+                        <p>Tokat atacağın fotoğrafı seç!</p>
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        <button id="uploadBtn" class="upload-button">Fotoğraf Seç</button>
+                        <p class="upload-hint">veya varsayılan resmi kullan ⬇️</p>
+                        <button id="useDefaultBtn" class="default-button">Varsayılan Kullan</button>
+                    </div>
+                </div>
+                <img id="faceImage" src="" alt="Face" class="face-image" style="display: none;">
+
+                <!-- Kızarma Overlay -->
+                <div id="redness" class="redness-overlay"></div>
+
+                <!-- Particle Container -->
+                <div id="particleContainer" class="particle-container"></div>
+
+                <!-- Göz Kırpma -->
+                <div id="leftEye" class="eye left-eye"></div>
+                <div id="rightEye" class="eye right-eye"></div>
+            </div>
+
+            <!-- Power Meter -->
+            <div class="power-meter">
+                <div class="power-bar">
+                    <div id="powerFill" class="power-fill"></div>
+                </div>
+                <div class="power-label">Kaydır ve Bırak!</div>
+            </div>
+
+            <!-- Vuruş Noktası Göstergesi -->
+            <div id="hitIndicator" class="hit-indicator"></div>
+        </div>
+
+        <!-- Talimatlar -->
+        <div class="instructions">
+            <h3>🎮 Nasıl Oynanır?</h3>
+            <p><strong>Bilgisayar:</strong> Mouse'u hızlıca kaydır! Hız = Güç!</p>
+            <p><strong>Mobil:</strong> Parmağını hızlıca kaydır!</p>
+            <p class="tip">💡 İpucu: Daha hızlı kaydır, daha güçlü tokat at!</p>
+        </div>
+    </div>
+
+    <!-- Ses Dosyaları (Data URL olarak embed edilecek) -->
+    <audio id="slapSound" preload="auto"></audio>
+    <audio id="impactSound" preload="auto"></audio>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
