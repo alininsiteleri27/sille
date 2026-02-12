@@ -39,8 +39,44 @@
                     <option value="male-medium">👨🏽 Orta Erkek</option>
                     <option value="male-hairy">👨🦱 Kıllı Erkek</option>
                 </select>
+                <button id="eyeCalibrationBtn" class="calibration-btn">👁️ Göz Ayarla</button>
             </div>
         </header>
+
+        <!-- Göz Ayarlama Paneli -->
+        <div id="eyeCalibrationPanel" class="calibration-panel hidden">
+            <div class="panel-content">
+                <h2>👁️ Göz Konumu Ayarla</h2>
+                <p>Fotoğraftaki gözlerin konumunu işaretle</p>
+                <div class="eye-markers">
+                    <div class="marker-info">
+                        <span>Sol Göz:</span>
+                        <span id="leftEyePos">-</span>
+                    </div>
+                    <div class="marker-info">
+                        <span>Sağ Göz:</span>
+                        <span id="rightEyePos">-</span>
+                    </div>
+                </div>
+                <button id="saveEyePos" class="save-btn">✓ Kaydet</button>
+                <button id="cancelEyePos" class="cancel-btn">✗ İptal</button>
+            </div>
+        </div>
+
+        <!-- FPS Kol + El Görünümü -->
+        <div id="fpsArm" class="fps-arm">
+            <div class="arm-shoulder"></div>
+            <div class="arm-upper"></div>
+            <div class="arm-forearm"></div>
+            <div class="arm-hand">
+                <div class="hand-palm"></div>
+                <div class="finger finger-thumb"></div>
+                <div class="finger finger-index"></div>
+                <div class="finger finger-middle"></div>
+                <div class="finger finger-ring"></div>
+                <div class="finger finger-pinky"></div>
+            </div>
+        </div>
 
         <!-- Oyun Alanı -->
         <div class="game-area">
