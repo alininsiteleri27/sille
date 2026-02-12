@@ -1,248 +1,589 @@
-/* ==================== Global Styles ==================== */
-* {
+/* ==================== CSS VARIABLES ==================== */
+:root {
+    --skin-light: #f5d0b0;
+    --skin-light-shadow: #d4a574;
+    --skin-light-highlight: #ffe8d0;
+    --skin-medium: #c49563;
+    --skin-medium-shadow: #a07850;
+    --skin-medium-highlight: #deb88a;
+    --skin-dark: #8b6340;
+    --skin-dark-shadow: #6b4a30;
+    --skin-dark-highlight: #a07850;
+
+    --nail-color: #f0c8c8;
+    --nail-highlight: #ffe0e0;
+
+    --hair-dark: #3b2614;
+    --hair-light: #8b7355;
+
+    --primary: #667eea;
+    --primary-dark: #4a5fd0;
+    --accent: #764ba2;
+    --gradient-main: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    --glass: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --danger: #ef4444;
+    --success: #4ade80;
+    --warning: #facc15;
+    --gold: #ffd700;
+}
+
+/* ==================== GLOBAL RESET ==================== */
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html,
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    background: var(--gradient-main);
+    color: var(--text);
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+    cursor: default;
 }
 
-.container {
-    width: 100%;
-    max-width: 800px;
-    padding: 20px;
-}
-
-/* ==================== Header & Stats ==================== */
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    animation: fadeInDown 0.8s ease;
-}
-
-h1 {
-    color: #fff;
-    font-size: 2.5rem;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    margin-bottom: 20px;
-    font-weight: 700;
-}
-
-.stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.stat-item {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    padding: 15px 25px;
-    border-radius: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.stat-label {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.stat-value {
-    color: #fff;
-    font-size: 1.8rem;
-    font-weight: 700;
-    display: block;
-}
-
-/* ==================== Hand Selector ==================== */
-.hand-selector {
-    margin-top: 15px;
-    text-align: center;
-}
-
-.hand-selector label {
-    color: #fff;
-    font-weight: 600;
-    margin-right: 10px;
-}
-
-.hand-selector select {
-    padding: 8px 15px;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.hand-selector select:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.hand-selector select option {
-    background: #667eea;
-    color: #fff;
-}
-
-/* ==================== Game Area ==================== */
-.game-area {
-    position: relative;
-    animation: fadeInUp 1s ease;
-}
-
-/* ==================== Upload Section ==================== */
-.upload-section {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+/* ==================== MAIN MENU ==================== */
+.main-menu {
+    position: fixed;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    z-index: 50;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
 }
 
-.upload-box {
-    text-align: center;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+.main-menu.hidden {
+    display: none;
 }
 
-.upload-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    animation: pulse 2s ease-in-out infinite;
+.menu-bg-effect {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(239, 68, 68, 0.08) 0%, transparent 50%);
+    animation: bgPulse 8s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes bgPulse {
 
     0%,
     100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.menu-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    animation: fadeInUp 0.8s ease;
+}
+
+.menu-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.title-emoji {
+    font-size: 5rem;
+    display: block;
+    margin-bottom: 10px;
+    animation: handWave 2s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px rgba(255, 200, 0, 0.3));
+}
+
+@keyframes handWave {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(20deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+}
+
+.menu-title h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #fff 0%, #ffd700 50%, #ff6b6b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 5px 20px rgba(255, 215, 0, 0.3));
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+/* ==================== SELECTION SECTIONS ==================== */
+.selection-section {
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+}
+
+.selection-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--text);
+}
+
+/* ==================== CHARACTER GRID ==================== */
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.character-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.character-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.character-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.character-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.character-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.character-card:hover::before {
+    opacity: 1;
+}
+
+.character-card.selected {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.05);
+    transform: translateY(-4px) scale(1.02);
+}
+
+.character-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.character-avatar {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.character-avatar canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.character-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.character-tag {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ==================== HAND OPTIONS ==================== */
+.hand-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.hand-option {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.hand-option:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.hand-option.selected {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.08);
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
+}
+
+.hand-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    background: #4ade80;
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.hand-preview {
+    width: 50px;
+    height: 60px;
+    margin: 0 auto 10px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.hand-option-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.hand-option-desc {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+}
+
+/* ==================== START BUTTON ==================== */
+.start-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    margin: 30px auto 10px;
+    padding: 18px 40px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 3px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.start-btn:hover:not(:disabled)::before {
+    transform: translateX(100%);
+}
+
+.start-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+}
+
+.start-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.start-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.6rem;
+}
+
+.start-hint {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+/* ==================== GAME SCREEN ==================== */
+.game-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.game-screen.hidden {
+    display: none;
+}
+
+/* ==================== GAME HUD ==================== */
+.game-hud {
+    position: relative;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-left,
+.hud-center,
+.hud-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud-btn {
+    padding: 8px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.hud-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.combo-display {
+    text-align: center;
+    padding: 6px 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 100, 0, 0.1));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 14px;
+    transition: all 0.3s;
+}
+
+.combo-display.active {
+    animation: comboPulse 0.5s ease;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes comboPulse {
+    0% {
         transform: scale(1);
     }
 
     50% {
-        transform: scale(1.1);
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
     }
 }
 
-.upload-box h2 {
-    color: #fff;
-    font-size: 2rem;
-    margin-bottom: 10px;
+.combo-count {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
 }
 
-.upload-box p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-}
-
-.upload-hint {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem !important;
-    margin: 15px 0 10px 0 !important;
-}
-
-.upload-button,
-.default-button {
-    padding: 15px 40px;
-    font-size: 1.1rem;
+.combo-label {
+    display: block;
+    font-size: 0.6rem;
     font-weight: 700;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    margin: 5px;
+    letter-spacing: 2px;
+    color: rgba(255, 215, 0, 0.7);
 }
 
-.upload-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.hud-stat {
+    text-align: center;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-stat.highlight {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(59, 130, 246, 0.1));
+    border-color: rgba(74, 222, 128, 0.2);
+}
+
+.hud-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hud-value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 900;
     color: #fff;
+    line-height: 1.2;
 }
 
-.upload-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(118, 75, 162, 0.5);
+/* ==================== GAME ARENA ==================== */
+.game-arena {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
-.default-button {
-    background: linear-gradient(135deg, #4ade80 0%, #3b82f6 100%);
-    color: #fff;
+/* Arena arka plan efektleri */
+.game-arena::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 50% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    pointer-events: none;
 }
 
-.default-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(74, 222, 128, 0.5);
-}
-
-.upload-section.hidden {
-    display: none;
-}
-
+/* ==================== FACE CONTAINER ==================== */
 .face-container {
     position: relative;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
+    aspect-ratio: 1;
     margin: 0 auto;
     cursor: pointer;
     transform-origin: center center;
-    transition: transform 0.1s ease-out;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: visible;
-    /* Changed for 3D effects */
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    min-height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
     perspective: 1200px;
-    /* 3D perspective */
     transform-style: preserve-3d;
+    z-index: 10;
 }
 
-.face-image {
+.face-canvas {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    border-radius: 20px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(102, 126, 234, 0.1);
     transition: filter 0.3s ease;
     transform-style: preserve-3d;
-    backface-visibility: visible;
-    will-change: transform, filter;
-    image-rendering: high-quality;
-    -webkit-backface-visibility: visible;
 }
 
-/* ==================== Redness Overlay ==================== */
+/* ==================== REDNESS OVERLAY ==================== */
 .redness-overlay {
     position: absolute;
     top: 0;
@@ -252,21 +593,17 @@ h1 {
     background: radial-gradient(circle at center, rgba(255, 0, 0, 0.6) 0%, rgba(255, 0, 0, 0) 60%);
     opacity: 0;
     pointer-events: none;
-    border-radius: 20px;
+    border-radius: 24px;
     transition: opacity 0.5s ease-out;
     mix-blend-mode: multiply;
 }
 
-.redness-overlay.active {
-    opacity: 1;
-}
-
-/* ==================== Eyes (Blinking) ==================== */
+/* ==================== EYES ==================== */
 .eye {
     position: absolute;
-    width: 60px;
+    width: 50px;
     height: 8px;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 0;
     opacity: 0;
     transition: all 0.15s ease;
@@ -303,7 +640,39 @@ h1 {
     }
 }
 
-/* ==================== Particle System ==================== */
+/* ==================== SLAP MARK ==================== */
+.slap-mark {
+    position: absolute;
+    width: 80px;
+    height: 100px;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    transition: opacity 1.5s ease-out;
+}
+
+.slap-mark.visible {
+    opacity: 1;
+    animation: slapMarkAppear 0.3s ease;
+}
+
+@keyframes slapMarkAppear {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ==================== PARTICLE SYSTEM ==================== */
 .particle-container {
     position: absolute;
     top: 0;
@@ -320,6 +689,7 @@ h1 {
     pointer-events: none;
     font-size: 24px;
     animation: particleFly 1s ease-out forwards;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
 }
 
 @keyframes particleFly {
@@ -334,437 +704,7 @@ h1 {
     }
 }
 
-/* ==================== Power Meter ==================== */
-.power-meter {
-    margin: 30px auto;
-    max-width: 500px;
-}
-
-.power-bar {
-    width: 100%;
-    height: 30px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.power-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #4ade80 0%, #facc15 50%, #ef4444 100%);
-    transition: width 0.2s ease, background 0.3s ease;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(74, 222, 128, 0.6);
-}
-
-.power-label {
-    text-align: center;
-    color: #fff;
-    margin-top: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* ==================== Hit Indicator ==================== */
-.hit-indicator {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    font-size: 4rem;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
-        0 0 60px rgba(255, 0, 0, 0.6);
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0;
-}
-
-.hit-indicator.show {
-    animation: hitPop 0.6s ease-out;
-}
-
-@keyframes hitPop {
-    0% {
-        transform: translate(-50%, -50%) scale(0) rotate(-10deg);
-        opacity: 0;
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(1.5) rotate(5deg);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
-        opacity: 0;
-    }
-}
-
-/* ==================== Ultra Realistic Shake with 3D Physics ==================== */
-.shake {
-    animation: ultraRealisticShake 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
-}
-
-@keyframes ultraRealisticShake {
-    0% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 0, 1, 0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1);
-    }
-
-    12% {
-        transform: translate3d(-12px, -3px, -8px) rotate3d(0.3, 0.2, 1, -5deg) scale3d(0.97, 1.04, 1);
-        filter: blur(1px) brightness(1.05);
-    }
-
-    24% {
-        transform: translate3d(10px, -2px, 6px) rotate3d(-0.25, 0.15, 1, 4deg) scale3d(1.03, 0.97, 1);
-        filter: blur(0.8px) brightness(1.03);
-    }
-
-    36% {
-        transform: translate3d(-8px, 2px, -5px) rotate3d(0.2, -0.1, 1, -3deg) scale3d(0.98, 1.02, 1);
-        filter: blur(0.6px) brightness(1.02);
-    }
-
-    48% {
-        transform: translate3d(6px, 0px, 4px) rotate3d(-0.15, 0.08, 1, 2.5deg) scale3d(1.02, 0.98, 1);
-        filter: blur(0.4px) brightness(1.01);
-    }
-
-    60% {
-        transform: translate3d(-4px, -1px, -3px) rotate3d(0.1, 0, 1, -1.8deg) scale3d(0.99, 1.01, 1);
-        filter: blur(0.3px) brightness(1);
-    }
-
-    72% {
-        transform: translate3d(3px, 0px, 2px) rotate3d(-0.08, 0, 1, 1.2deg) scale3d(1.01, 0.99, 1);
-        filter: blur(0.2px) brightness(1);
-    }
-
-    84% {
-        transform: translate3d(-1.5px, 0px, -1px) rotate3d(0.03, 0, 1, -0.6deg) scale3d(1, 1, 1);
-        filter: blur(0.1px) brightness(1);
-    }
-
-    100% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 0, 1, 0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1);
-    }
-}
-
-/* ==================== Realistic Medium Slap with Jello/Flesh Effect ==================== */
-.slapped {
-    animation: realisticMediumSlap 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-}
-
-@keyframes realisticMediumSlap {
-    0% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1) contrast(1);
-    }
-
-    7% {
-        transform: translate3d(-28px, -6px, -18px) rotate3d(0.35, 1, 0.25, -22deg) rotateZ(-10deg) scale3d(0.90, 1.11, 1);
-        filter: blur(2.5px) brightness(1.12) contrast(1.05);
-    }
-
-    14% {
-        transform: translate3d(-38px, -4px, -24px) rotate3d(0.42, 1, 0.32, -30deg) rotateZ(-14deg) scale3d(0.85, 1.16, 1);
-        filter: blur(3.5px) brightness(1.18) contrast(1.08);
-    }
-
-    22% {
-        transform: translate3d(-32px, -3px, -20px) rotate3d(0.38, 1, 0.28, -26deg) rotateZ(-12deg) scale3d(0.88, 1.13, 1);
-        filter: blur(3px) brightness(1.15) contrast(1.06);
-    }
-
-    30% {
-        transform: translate3d(25px, 3px, 15px) rotate3d(-0.32, 1, -0.22, 20deg) rotateZ(11deg) scale3d(1.10, 0.92, 1);
-        filter: blur(2.8px) brightness(1.10) contrast(1.04);
-    }
-
-    38% {
-        transform: translate3d(-15px, -2px, -10px) rotate3d(0.25, 1, 0.15, -14deg) rotateZ(-7deg) scale3d(0.94, 1.07, 1);
-        filter: blur(2px) brightness(1.07) contrast(1.02);
-    }
-
-    46% {
-        transform: translate3d(10px, 2px, 7px) rotate3d(-0.18, 1, -0.12, 10deg) rotateZ(5deg) scale3d(1.06, 0.95, 1);
-        filter: blur(1.5px) brightness(1.05) contrast(1.01);
-    }
-
-    54% {
-        transform: translate3d(-7px, -1px, -5px) rotate3d(0.14, 1, 0.08, -8deg) rotateZ(-4deg) scale3d(0.97, 1.04, 1);
-        filter: blur(1.2px) brightness(1.03) contrast(1);
-    }
-
-    62% {
-        transform: translate3d(5px, 1px, 3px) rotate3d(-0.1, 1, -0.06, 5deg) rotateZ(2.5deg) scale3d(1.03, 0.98, 1);
-        filter: blur(0.9px) brightness(1.02) contrast(1);
-    }
-
-    70% {
-        transform: translate3d(-3px, 0px, -2px) rotate3d(0.07, 1, 0.03, -3.5deg) rotateZ(-1.8deg) scale3d(0.99, 1.02, 1);
-        filter: blur(0.6px) brightness(1.01) contrast(1);
-    }
-
-    78% {
-        transform: translate3d(2px, 0px, 1px) rotate3d(-0.05, 1, -0.02, 2deg) rotateZ(1deg) scale3d(1.01, 0.99, 1);
-        filter: blur(0.4px) brightness(1) contrast(1);
-    }
-
-    86% {
-        transform: translate3d(-1px, 0px, -0.5px) rotate3d(0.02, 1, 0.01, -1deg) rotateZ(-0.5deg) scale3d(1, 1, 1);
-        filter: blur(0.2px) brightness(1) contrast(1);
-    }
-
-    94% {
-        transform: translate3d(0.3px, 0px, 0px) rotate3d(-0.01, 1, 0, 0.3deg) rotateZ(0.1deg) scale3d(1, 1, 1);
-        filter: blur(0.1px) brightness(1) contrast(1);
-    }
-
-    100% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1) contrast(1);
-    }
-}
-
-/* ==================== EXTREME Realistic Strong Slap - Maximum Impact ==================== */
-.strong-slap {
-    animation: extremeRealisticSlap 2s cubic-bezier(0.19, 1, 0.22, 1) both;
-}
-
-@keyframes extremeRealisticSlap {
-    0% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1) saturate(1) contrast(1);
-    }
-
-    4% {
-        transform: translate3d(-40px, -10px, -30px) rotate3d(0.45, 1, 0.45, -35deg) rotateZ(-18deg) scale3d(0.82, 1.20, 1);
-        filter: blur(5px) brightness(1.25) saturate(1.25) contrast(1.1);
-    }
-
-    8% {
-        transform: translate3d(-62px, -13px, -42px) rotate3d(0.55, 1, 0.55, -48deg) rotateZ(-26deg) scale3d(0.74, 1.32, 1);
-        filter: blur(7px) brightness(1.35) saturate(1.35) contrast(1.15);
-    }
-
-    12% {
-        transform: translate3d(-58px, -11px, -38px) rotate3d(0.52, 1, 0.52, -45deg) rotateZ(-24deg) scale3d(0.77, 1.28, 1);
-        filter: blur(6.5px) brightness(1.32) saturate(1.32) contrast(1.13);
-    }
-
-    16% {
-        transform: translate3d(-50px, -9px, -34px) rotate3d(0.48, 1, 0.48, -42deg) rotateZ(-21deg) scale3d(0.80, 1.25, 1);
-        filter: blur(6px) brightness(1.28) saturate(1.28) contrast(1.12);
-    }
-
-    22% {
-        transform: translate3d(42px, 7px, 26px) rotate3d(-0.45, 1, -0.38, 38deg) rotateZ(21deg) scale3d(1.20, 0.84, 1);
-        filter: blur(5.5px) brightness(1.22) saturate(1.22) contrast(1.1);
-    }
-
-    28% {
-        transform: translate3d(-28px, -5px, -18px) rotate3d(0.35, 1, 0.28, -26deg) rotateZ(-14deg) scale3d(0.88, 1.14, 1);
-        filter: blur(4.5px) brightness(1.18) saturate(1.18) contrast(1.08);
-    }
-
-    34% {
-        transform: translate3d(22px, 4px, 14px) rotate3d(-0.32, 1, -0.24, 22deg) rotateZ(12deg) scale3d(1.12, 0.90, 1);
-        filter: blur(4px) brightness(1.15) saturate(1.15) contrast(1.06);
-    }
-
-    40% {
-        transform: translate3d(-16px, -3px, -11px) rotate3d(0.28, 1, 0.18, -18deg) rotateZ(-10deg) scale3d(0.92, 1.10, 1);
-        filter: blur(3.5px) brightness(1.12) saturate(1.12) contrast(1.05);
-    }
-
-    46% {
-        transform: translate3d(13px, 2px, 9px) rotate3d(-0.24, 1, -0.16, 15deg) rotateZ(8deg) scale3d(1.08, 0.93, 1);
-        filter: blur(3px) brightness(1.10) saturate(1.10) contrast(1.04);
-    }
-
-    52% {
-        transform: translate3d(-10px, -2px, -7px) rotate3d(0.2, 1, 0.12, -12deg) rotateZ(-6deg) scale3d(0.95, 1.06, 1);
-        filter: blur(2.5px) brightness(1.08) saturate(1.08) contrast(1.03);
-    }
-
-    58% {
-        transform: translate3d(8px, 1px, 5px) rotate3d(-0.16, 1, -0.1, 9deg) rotateZ(5deg) scale3d(1.05, 0.96, 1);
-        filter: blur(2px) brightness(1.06) saturate(1.06) contrast(1.02);
-    }
-
-    64% {
-        transform: translate3d(-6px, -1px, -4px) rotate3d(0.13, 1, 0.08, -7deg) rotateZ(-4deg) scale3d(0.97, 1.04, 1);
-        filter: blur(1.6px) brightness(1.04) saturate(1.04) contrast(1.01);
-    }
-
-    70% {
-        transform: translate3d(4px, 0px, 3px) rotate3d(-0.1, 1, -0.06, 5deg) rotateZ(2.5deg) scale3d(1.03, 0.98, 1);
-        filter: blur(1.2px) brightness(1.03) saturate(1.03) contrast(1.01);
-    }
-
-    76% {
-        transform: translate3d(-3px, 0px, -2px) rotate3d(0.07, 1, 0.04, -3.5deg) rotateZ(-1.8deg) scale3d(0.99, 1.02, 1);
-        filter: blur(0.9px) brightness(1.02) saturate(1.02) contrast(1);
-    }
-
-    82% {
-        transform: translate3d(2px, 0px, 1px) rotate3d(-0.05, 1, -0.03, 2.2deg) rotateZ(1.2deg) scale3d(1.01, 0.99, 1);
-        filter: blur(0.6px) brightness(1.01) saturate(1.01) contrast(1);
-    }
-
-    88% {
-        transform: translate3d(-1.2px, 0px, -0.6px) rotate3d(0.03, 1, 0.01, -1.2deg) rotateZ(-0.6deg) scale3d(1, 1, 1);
-        filter: blur(0.4px) brightness(1) saturate(1) contrast(1);
-    }
-
-    94% {
-        transform: translate3d(0.5px, 0px, 0.2px) rotate3d(-0.01, 1, 0, 0.5deg) rotateZ(0.2deg) scale3d(1, 1, 1);
-        filter: blur(0.2px) brightness(1) saturate(1) contrast(1);
-    }
-
-    100% {
-        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
-        filter: blur(0px) brightness(1) saturate(1) contrast(1);
-    }
-}
-
-/* ==================== Instructions ==================== */
-.instructions {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 20px;
-    margin-top: 30px;
-    text-align: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    animation: fadeInUp 1.2s ease;
-}
-
-.instructions h3 {
-    color: #fff;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-}
-
-.instructions p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-.instructions strong {
-    color: #fff;
-    font-weight: 700;
-}
-
-.tip {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 10px 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-    border-left: 4px solid #facc15;
-    font-style: italic;
-}
-
-/* ==================== Animations ==================== */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ==================== Responsive Design ==================== */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
-
-    .stats {
-        gap: 10px;
-    }
-
-    .stat-item {
-        padding: 12px 20px;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-    }
-
-    .face-container {
-        max-width: 100%;
-    }
-
-    .hit-indicator {
-        font-size: 3rem;
-    }
-
-    .instructions h3 {
-        font-size: 1.3rem;
-    }
-
-    .instructions p {
-        font-size: 0.95rem;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.6rem;
-    }
-
-    .stat-item {
-        padding: 10px 15px;
-    }
-
-    .stat-label {
-        font-size: 0.8rem;
-    }
-
-    .stat-value {
-        font-size: 1.3rem;
-    }
-
-    .power-label {
-        font-size: 1rem;
-    }
-
-    .hit-indicator {
-        font-size: 2.5rem;
-    }
-}
-
-/* ==================== ADVANCED EFFECTS ==================== */
-
-/* ==================== Sweat Drops ==================== */
+/* ==================== SWEAT ==================== */
 .sweat-container {
     position: absolute;
     top: 0;
@@ -804,21 +744,20 @@ h1 {
     }
 }
 
-/* ==================== Tongue ==================== */
+/* ==================== TONGUE ==================== */
 .tongue {
     position: absolute;
-    bottom: 35%;
+    bottom: 30%;
     left: 50%;
     transform: translateX(-50%) scaleY(0);
-    width: 60px;
-    height: 40px;
+    width: 50px;
+    height: 35px;
     background: linear-gradient(180deg, #ff6b9d 0%, #ff4477 100%);
     border-radius: 0 0 50% 50%;
     opacity: 0;
     pointer-events: none;
     z-index: 12;
     transform-origin: top center;
-    transition: all 0.3s ease;
 }
 
 .tongue::before {
@@ -828,12 +767,16 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 15px;
+    height: 12px;
     background: rgba(200, 50, 80, 0.5);
 }
 
 .tongue.show {
     animation: tongueOut 0.6s ease-out forwards;
+}
+
+.tongue.hide {
+    animation: tongueIn 0.4s ease-in forwards;
 }
 
 @keyframes tongueOut {
@@ -853,10 +796,6 @@ h1 {
     }
 }
 
-.tongue.hide {
-    animation: tongueIn 0.4s ease-in forwards;
-}
-
 @keyframes tongueIn {
     0% {
         transform: translateX(-50%) scaleY(1);
@@ -869,47 +808,776 @@ h1 {
     }
 }
 
-/* ==================== Hand Slap Animation ==================== */
-.hand-slap {
+/* ==================== POWER METER ==================== */
+.power-meter {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 20;
+}
+
+.power-bar {
+    width: 100%;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.power-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4ade80 0%, #facc15 40%, #ef4444 80%, #dc2626 100%);
+    transition: width 0.15s ease;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+    position: relative;
+}
+
+.power-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+    border-radius: 0 8px 8px 0;
+}
+
+.power-label {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ==================== HIT INDICATOR ==================== */
+.hit-indicator {
     position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(255, 0, 0, 0.6);
     pointer-events: none;
-    z-index: 9999;
+    z-index: 1000;
     opacity: 0;
-    transition: opacity 0.1s ease;
+    white-space: nowrap;
 }
 
-.hand-emoji {
-    font-size: 80px;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-    transform-origin: center center;
+.hit-indicator.show {
+    animation: hitPop 0.7s ease-out;
 }
 
-.hand-slap.active {
-    opacity: 1;
-    animation: handSlapMotion 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes handSlapMotion {
+@keyframes hitPop {
     0% {
-        transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.8);
+        transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+        opacity: 0;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1.6) rotate(5deg);
+        opacity: 1;
     }
 
     60% {
-        transform: translate(var(--endX), var(--endY)) rotate(var(--rotation)) scale(1.2);
+        transform: translate(-50%, -50%) scale(1.2) rotate(-2deg);
+        opacity: 1;
     }
 
     100% {
-        transform: translate(var(--endX), var(--endY)) rotate(var(--rotation)) scale(1);
+        transform: translate(-50%, -60%) scale(1) rotate(0deg);
         opacity: 0;
     }
 }
 
-/* ==================== Exhaustion Effect ==================== */
+/* ==================== DAMAGE NUMBERS ==================== */
+.damage-numbers {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.damage-num {
+    position: absolute;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    color: var(--danger);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.6);
+    pointer-events: none;
+    animation: damageFloat 1s ease-out forwards;
+}
+
+.damage-num.critical {
+    color: var(--gold);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.6);
+    font-size: 3rem;
+}
+
+@keyframes damageFloat {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* ==================== FPS ARM & HAND SYSTEM ==================== */
+.fps-arm {
+    position: fixed;
+    bottom: -80px;
+    right: -40px;
+    width: 380px;
+    height: 550px;
+    pointer-events: none;
+    z-index: 50;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out;
+}
+
+/* Üst kol */
+.arm-upper-arm {
+    position: absolute;
+    bottom: 60px;
+    right: 160px;
+    width: 95px;
+    height: 230px;
+    background: linear-gradient(135deg, var(--skin-light) 0%, var(--skin-light-shadow) 100%);
+    border-radius: 50px 50px 42px 42px;
+    transform: rotate(-25deg);
+    transform-origin: bottom center;
+    box-shadow:
+        inset -8px -8px 20px rgba(0, 0, 0, 0.2),
+        8px 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.arm-upper-arm::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 8%;
+    width: 30%;
+    height: 45%;
+    background: linear-gradient(to bottom, var(--skin-light-highlight), transparent);
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.5;
+}
+
+/* Ön kol */
+.arm-forearm {
+    position: absolute;
+    bottom: 80px;
+    right: 70px;
+    width: 85px;
+    height: 200px;
+    background: linear-gradient(145deg, var(--skin-light) 0%, var(--skin-light-shadow) 100%);
+    border-radius: 45px 45px 35px 35px;
+    transform: rotate(10deg);
+    transform-origin: top center;
+    box-shadow:
+        inset -6px -6px 15px rgba(0, 0, 0, 0.15),
+        6px 6px 20px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.arm-forearm::after {
+    content: '';
+    position: absolute;
+    top: 25%;
+    right: 12%;
+    width: 25%;
+    height: 35%;
+    background: linear-gradient(to left, var(--skin-light-highlight), transparent);
+    border-radius: 50%;
+    filter: blur(6px);
+    opacity: 0.4;
+}
+
+/* Kıl Katmanı */
+.hair-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    overflow: hidden;
+}
+
+.hair-layer.visible {
+    opacity: 1;
+}
+
+.arm-hair {
+    position: absolute;
+    width: 2px;
+    background: var(--hair-dark);
+    border-radius: 1px;
+    transform-origin: bottom center;
+    opacity: 0.5;
+}
+
+/* El Container */
+.arm-hand-container {
+    position: absolute;
+    bottom: 15px;
+    right: 30px;
+    width: 130px;
+    height: 150px;
+    transform: rotate(5deg);
+    transform-origin: bottom center;
+    filter: drop-shadow(5px 10px 20px rgba(0, 0, 0, 0.35));
+}
+
+.hand-palm {
+    position: absolute;
+    bottom: 0;
+    left: 22px;
+    width: 80px;
+    height: 95px;
+    background: linear-gradient(135deg, var(--skin-light-highlight) 0%, var(--skin-light-shadow) 100%);
+    border-radius: 40px 40px 20px 20px;
+    box-shadow: inset -4px -4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.palm-lines {
+    position: absolute;
+    top: 35%;
+    left: 15%;
+    width: 70%;
+    height: 50%;
+    pointer-events: none;
+}
+
+.palm-lines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    transform: rotate(-5deg);
+    box-shadow: 0 12px 0 rgba(0, 0, 0, 0.06), 0 24px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Parmaklar */
+.finger {
+    position: absolute;
+    background: linear-gradient(180deg, var(--skin-light-highlight) 0%, var(--skin-light-shadow) 100%);
+    border-radius: 14px 14px 10px 10px;
+    box-shadow:
+        inset -2px -2px 6px rgba(0, 0, 0, 0.12),
+        2px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.finger::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 50%;
+}
+
+/* Eklem çizgileri */
+.finger::before {
+    content: '';
+    position: absolute;
+    top: 40%;
+    left: 15%;
+    width: 70%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.05);
+}
+
+.thumb {
+    bottom: 25px;
+    left: 2px;
+    width: 32px;
+    height: 55px;
+    transform: rotate(-38deg);
+    border-radius: 16px;
+}
+
+.index-finger {
+    top: 2px;
+    left: 26px;
+    width: 21px;
+    height: 72px;
+}
+
+.middle-finger {
+    top: -4px;
+    left: 50px;
+    width: 21px;
+    height: 78px;
+}
+
+.ring-finger {
+    top: 0;
+    left: 74px;
+    width: 20px;
+    height: 68px;
+}
+
+.pinky-finger {
+    top: 10px;
+    right: 3px;
+    width: 17px;
+    height: 56px;
+}
+
+/* Tırnaklar */
+.nail {
+    position: absolute;
+    background: linear-gradient(180deg, var(--nail-highlight) 0%, var(--nail-color) 100%);
+    border-radius: 4px 4px 8px 8px;
+    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.thumb-nail {
+    bottom: 57px;
+    left: -6px;
+    width: 14px;
+    height: 12px;
+    transform: rotate(-38deg);
+}
+
+.index-nail {
+    top: 2px;
+    left: 29px;
+    width: 13px;
+    height: 10px;
+}
+
+.middle-nail {
+    top: -4px;
+    left: 53px;
+    width: 13px;
+    height: 10px;
+}
+
+.ring-nail {
+    top: 0px;
+    left: 76px;
+    width: 12px;
+    height: 9px;
+}
+
+.pinky-nail {
+    top: 10px;
+    right: 4px;
+    width: 11px;
+    height: 8px;
+}
+
+/* ==================== ARM SKIN VARIATIONS ==================== */
+/* Açık Ten - Kadın */
+.fps-arm.skin-female-light .arm-upper-arm,
+.fps-arm.skin-female-light .arm-forearm {
+    background: linear-gradient(135deg, #fce4d2 0%, #f0c8a8 100%);
+}
+
+.fps-arm.skin-female-light .hand-palm,
+.fps-arm.skin-female-light .finger {
+    background: linear-gradient(180deg, #fde8d8 0%, #eec4a0 100%);
+}
+
+.fps-arm.skin-female-light .nail {
+    background: linear-gradient(180deg, #ffb6c1 0%, #ff69b4 100%);
+}
+
+.fps-arm.skin-female-light .arm-forearm,
+.fps-arm.skin-female-light .arm-upper-arm {
+    box-shadow: inset -6px -6px 15px rgba(0, 0, 0, 0.08), 6px 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Orta Ten - Kadın */
+.fps-arm.skin-female-medium .arm-upper-arm,
+.fps-arm.skin-female-medium .arm-forearm {
+    background: linear-gradient(135deg, #d4a574 0%, #b88a58 100%);
+}
+
+.fps-arm.skin-female-medium .hand-palm,
+.fps-arm.skin-female-medium .finger {
+    background: linear-gradient(180deg, #deb88a 0%, #b88a58 100%);
+}
+
+.fps-arm.skin-female-medium .nail {
+    background: linear-gradient(180deg, #e08090 0%, #c06070 100%);
+}
+
+/* Açık Ten - Erkek */
+.fps-arm.skin-male-light .arm-upper-arm,
+.fps-arm.skin-male-light .arm-forearm {
+    background: linear-gradient(135deg, #e8c8a0 0%, #c49563 100%);
+}
+
+.fps-arm.skin-male-light .hand-palm,
+.fps-arm.skin-male-light .finger {
+    background: linear-gradient(180deg, #e8c8a0 0%, #c49563 100%);
+}
+
+.fps-arm.skin-male-light .arm-upper-arm,
+.fps-arm.skin-male-light .arm-forearm {
+    width: 100px;
+}
+
+/* Orta Ten - Erkek */
+.fps-arm.skin-male-medium .arm-upper-arm,
+.fps-arm.skin-male-medium .arm-forearm {
+    background: linear-gradient(135deg, #c49563 0%, #a07850 100%);
+}
+
+.fps-arm.skin-male-medium .hand-palm,
+.fps-arm.skin-male-medium .finger {
+    background: linear-gradient(180deg, #c49563 0%, #a07850 100%);
+}
+
+.fps-arm.skin-male-medium .arm-upper-arm,
+.fps-arm.skin-male-medium .arm-forearm {
+    width: 100px;
+}
+
+/* Kıllı Erkek */
+.fps-arm.skin-male-hairy .arm-upper-arm,
+.fps-arm.skin-male-hairy .arm-forearm {
+    background: linear-gradient(135deg, #d4a574 0%, #b08050 100%);
+}
+
+.fps-arm.skin-male-hairy .hand-palm,
+.fps-arm.skin-male-hairy .finger {
+    background: linear-gradient(180deg, #d4a574 0%, #b08050 100%);
+}
+
+.fps-arm.skin-male-hairy .arm-upper-arm,
+.fps-arm.skin-male-hairy .arm-forearm {
+    width: 105px;
+}
+
+.fps-arm.skin-male-hairy .hair-layer {
+    opacity: 1;
+}
+
+/* Koyu Ten - Erkek */
+.fps-arm.skin-male-dark .arm-upper-arm,
+.fps-arm.skin-male-dark .arm-forearm {
+    background: linear-gradient(135deg, #8b6340 0%, #6b4a30 100%);
+}
+
+.fps-arm.skin-male-dark .hand-palm,
+.fps-arm.skin-male-dark .finger {
+    background: linear-gradient(180deg, #8b6340 0%, #6b4a30 100%);
+}
+
+.fps-arm.skin-male-dark .nail {
+    background: linear-gradient(180deg, #a08070 0%, #806050 100%);
+}
+
+.fps-arm.skin-male-dark .arm-upper-arm,
+.fps-arm.skin-male-dark .arm-forearm {
+    width: 100px;
+}
+
+/* ==================== ARM ANIMATIONS ==================== */
+/* İdle nefes alma */
+.fps-arm.idle {
+    animation: armIdle 4s ease-in-out infinite;
+}
+
+@keyframes armIdle {
+
+    0%,
+    100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-8px) translateX(-4px) rotate(-0.8deg);
+    }
+
+    50% {
+        transform: translateY(-12px) translateX(0) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(-8px) translateX(4px) rotate(0.8deg);
+    }
+}
+
+/* Vuruş Animasyonu - Gerçekçi tokat hareketi */
+.fps-arm.slapping {
+    animation: armSlap 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes armSlap {
+    0% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+
+    15% {
+        transform: translateX(30px) translateY(10px) rotate(8deg) scale(0.95);
+    }
+
+    35% {
+        transform: translateX(-200px) translateY(-80px) rotate(-30deg) scale(1.15);
+    }
+
+    50% {
+        transform: translateX(-220px) translateY(-100px) rotate(-35deg) scale(1.2);
+    }
+
+    70% {
+        transform: translateX(-100px) translateY(-40px) rotate(-15deg) scale(1.05);
+    }
+
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+}
+
+/* Güçlü tokat */
+.fps-arm.strong-slap {
+    animation: armStrongSlap 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes armStrongSlap {
+    0% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+
+    10% {
+        transform: translateX(50px) translateY(20px) rotate(15deg) scale(0.9);
+    }
+
+    30% {
+        transform: translateX(-280px) translateY(-120px) rotate(-45deg) scale(1.25);
+    }
+
+    45% {
+        transform: translateX(-300px) translateY(-140px) rotate(-50deg) scale(1.3);
+    }
+
+    60% {
+        transform: translateX(-150px) translateY(-60px) rotate(-20deg) scale(1.1);
+    }
+
+    80% {
+        transform: translateX(-30px) translateY(-10px) rotate(-3deg) scale(1.02);
+    }
+
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+}
+
+/* Parmak kasılma */
+.fps-arm.slapping .finger,
+.fps-arm.strong-slap .finger {
+    animation: fingerTense 0.3s ease forwards;
+}
+
+@keyframes fingerTense {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-3deg) scaleX(0.95);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* ==================== FACE SHAKE ANIMATIONS ==================== */
+.shake {
+    animation: ultraRealisticShake 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+@keyframes ultraRealisticShake {
+    0% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 0, 1, 0deg);
+        filter: blur(0px) brightness(1);
+    }
+
+    12% {
+        transform: translate3d(-12px, -3px, -8px) rotate3d(0.3, 0.2, 1, -5deg);
+        filter: blur(1px) brightness(1.05);
+    }
+
+    24% {
+        transform: translate3d(10px, -2px, 6px) rotate3d(-0.25, 0.15, 1, 4deg);
+        filter: blur(0.8px);
+    }
+
+    36% {
+        transform: translate3d(-8px, 2px, -5px) rotate3d(0.2, -0.1, 1, -3deg);
+        filter: blur(0.6px);
+    }
+
+    48% {
+        transform: translate3d(6px, 0px, 4px) rotate3d(-0.15, 0.08, 1, 2.5deg);
+        filter: blur(0.4px);
+    }
+
+    60% {
+        transform: translate3d(-4px, -1px, -3px) rotate3d(0.1, 0, 1, -1.8deg);
+        filter: blur(0.3px);
+    }
+
+    72% {
+        transform: translate3d(3px, 0px, 2px) rotate3d(-0.08, 0, 1, 1.2deg);
+        filter: blur(0.2px);
+    }
+
+    84% {
+        transform: translate3d(-1.5px, 0px, -1px) rotate3d(0.03, 0, 1, -0.6deg);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 0, 1, 0deg);
+        filter: blur(0px) brightness(1);
+    }
+}
+
+.slapped {
+    animation: realisticSlap 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes realisticSlap {
+    0% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
+        filter: blur(0px);
+    }
+
+    7% {
+        transform: translate3d(-28px, -6px, -18px) rotate3d(0.35, 1, 0.25, -22deg) rotateZ(-10deg) scale3d(0.90, 1.11, 1);
+        filter: blur(2.5px);
+    }
+
+    14% {
+        transform: translate3d(-38px, -4px, -24px) rotate3d(0.42, 1, 0.32, -30deg) rotateZ(-14deg) scale3d(0.85, 1.16, 1);
+        filter: blur(3.5px);
+    }
+
+    30% {
+        transform: translate3d(25px, 3px, 15px) rotate3d(-0.32, 1, -0.22, 20deg) rotateZ(11deg) scale3d(1.10, 0.92, 1);
+        filter: blur(2.8px);
+    }
+
+    46% {
+        transform: translate3d(10px, 2px, 7px) rotate3d(-0.18, 1, -0.12, 10deg) rotateZ(5deg);
+        filter: blur(1.5px);
+    }
+
+    62% {
+        transform: translate3d(-7px, -1px, -5px) rotate3d(0.14, 1, 0.08, -8deg) rotateZ(-4deg);
+        filter: blur(1px);
+    }
+
+    78% {
+        transform: translate3d(2px, 0px, 1px) rotate3d(-0.05, 1, -0.03, 2deg) rotateZ(1deg);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
+        filter: blur(0px);
+    }
+}
+
+.strong-slapped {
+    animation: extremeSlap 2s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+@keyframes extremeSlap {
+    0% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg);
+        filter: blur(0px) brightness(1);
+    }
+
+    4% {
+        transform: translate3d(-40px, -10px, -30px) rotate3d(0.45, 1, 0.45, -35deg) rotateZ(-18deg) scale3d(0.82, 1.20, 1);
+        filter: blur(5px) brightness(1.25);
+    }
+
+    8% {
+        transform: translate3d(-62px, -13px, -42px) rotate3d(0.55, 1, 0.55, -48deg) rotateZ(-26deg) scale3d(0.74, 1.32, 1);
+        filter: blur(7px) brightness(1.35);
+    }
+
+    16% {
+        transform: translate3d(-50px, -9px, -34px) rotate3d(0.48, 1, 0.48, -42deg) rotateZ(-21deg);
+        filter: blur(6px);
+    }
+
+    22% {
+        transform: translate3d(42px, 7px, 26px) rotate3d(-0.45, 1, -0.38, 38deg) rotateZ(21deg) scale3d(1.20, 0.84, 1);
+        filter: blur(5.5px);
+    }
+
+    34% {
+        transform: translate3d(22px, 4px, 14px) rotate3d(-0.32, 1, -0.24, 22deg) rotateZ(12deg);
+        filter: blur(4px);
+    }
+
+    46% {
+        transform: translate3d(13px, 2px, 9px) rotate3d(-0.24, 1, -0.16, 15deg) rotateZ(8deg);
+        filter: blur(3px);
+    }
+
+    58% {
+        transform: translate3d(8px, 1px, 5px) rotate3d(-0.16, 1, -0.1, 9deg) rotateZ(5deg);
+        filter: blur(2px);
+    }
+
+    70% {
+        transform: translate3d(4px, 0px, 3px) rotate3d(-0.1, 1, -0.06, 5deg) rotateZ(2.5deg);
+        filter: blur(1.2px);
+    }
+
+    82% {
+        transform: translate3d(2px, 0px, 1px) rotate3d(-0.05, 1, -0.03, 2.2deg) rotateZ(1.2deg);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) rotate3d(0, 1, 0, 0deg) rotateZ(0deg) scale3d(1, 1, 1);
+        filter: blur(0px) brightness(1);
+    }
+}
+
+/* ==================== EXHAUSTION ==================== */
 .face-container.exhausted {
     filter: saturate(0.7) brightness(0.9);
 }
 
-.face-container.exhausted .face-image {
+.face-container.exhausted .face-canvas {
     animation: exhaustedBreathe 2s ease-in-out infinite;
 }
 
@@ -921,34 +1589,17 @@ h1 {
     }
 
     50% {
-        transform: scale(1.02);
+        transform: scale(1.015);
     }
 }
 
-/* ==================== Enhanced Redness with Pulse ==================== */
-.redness-overlay.intense {
-    animation: rednessPulse 0.8s ease-out forwards;
-}
-
-@keyframes rednessPulse {
-
-    0%,
-    100% {
-        opacity: var(--intensity);
-    }
-
-    50% {
-        opacity: calc(var(--intensity) * 1.3);
-    }
-}
-
-/* ==================== Dizzy Stars (When Very Tired) ==================== */
+/* ==================== DIZZY STARS ==================== */
 .dizzy-stars {
     position: absolute;
-    top: 10%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 30px;
+    font-size: 28px;
     pointer-events: none;
     z-index: 20;
     opacity: 0;
@@ -978,366 +1629,11 @@ h1 {
     }
 }
 
-/* ==================== FPS ARM & HAND SYSTEM ==================== */
-
-/* FPS Kol Container */
-.fps-arm {
-    position: fixed;
-    bottom: -100px;
-    right: -50px;
-    width: 400px;
-    height: 600px;
-    pointer-events: none;
-    z-index: 50;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-    transition: transform 0.3s ease-out;
+/* ==================== SCREEN SHAKE ==================== */
+.game-screen.screen-shake {
+    animation: screenShake 0.5s ease-in-out;
 }
 
-/* Shoulder - Omuz */
-.arm-shoulder {
-    position: absolute;
-    bottom: 50px;
-    right: 250px;
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(ellipse at center, #d4a574 0%, #c49563 100%);
-    border-radius: 50%;
-    box-shadow: inset -10px -10px 30px rgba(0, 0, 0, 0.3),
-        0 10px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* Upper Arm - Üst Kol */
-.arm-upper {
-    position: absolute;
-    bottom: 150px;
-    right: 180px;
-    width: 100px;
-    height: 220px;
-    background: linear-gradient(135deg, #d4a574 0%, #c49563 50%, #b8885c 100%);
-    border-radius: 50px 50px 40px 40px;
-    transform: rotate(-25deg);
-    transform-origin: bottom center;
-    box-shadow: inset -8px -8px 20px rgba(0, 0, 0, 0.25),
-        8px 8px 30px rgba(0, 0, 0, 0.3);
-}
-
-.arm-upper::before {
-    content: '';
-    position: absolute;
-    top: 20%;
-    left: 10%;
-    width: 30%;
-    height: 50%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), transparent);
-    border-radius: 50%;
-    filter: blur(8px);
-}
-
-/* Forearm - Ön Kol */
-.arm-forearm {
-    position: absolute;
-    bottom: 80px;
-    right: 80px;
-    width: 90px;
-    height: 200px;
-    background: linear-gradient(145deg, #d4a574 0%, #c49563 50%, #b8885c 100%);
-    border-radius: 45px 45px 35px 35px;
-    transform: rotate(10deg);
-    transform-origin: top center;
-    box-shadow: inset -6px -6px 15px rgba(0, 0, 0, 0.2),
-        6px 6px 25px rgba(0, 0, 0, 0.3);
-}
-
-.arm-forearm::after {
-    content: '';
-    position: absolute;
-    top: 30%;
-    right: 15%;
-    width: 25%;
-    height: 40%;
-    background: linear-gradient(to left, rgba(255, 255, 255, 0.12), transparent);
-    border-radius: 50%;
-    filter: blur(6px);
-}
-
-/* Hand - El */
-.arm-hand {
-    position: absolute;
-    bottom: 20px;
-    right: 40px;
-    width: 120px;
-    height: 140px;
-    transform: rotate(5deg);
-    transform-origin: bottom center;
-    filter: drop-shadow(5px 10px 20px rgba(0, 0, 0, 0.4));
-}
-
-.hand-palm {
-    position: absolute;
-    bottom: 0;
-    left: 20px;
-    width: 80px;
-    height: 100px;
-    background: linear-gradient(135deg, #deb88a 0%, #c49563 100%);
-    border-radius: 40px 40px 20px 20px;
-    box-shadow: inset -4px -4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Parmaklar */
-.finger {
-    position: absolute;
-    background: linear-gradient(180deg, #deb88a 0%, #c49563 100%);
-    border-radius: 15px 15px 10px 10px;
-    box-shadow: inset -2px -2px 8px rgba(0, 0, 0, 0.15),
-        2px 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.finger-thumb {
-    bottom: 30px;
-    left: 0;
-    width: 35px;
-    height: 60px;
-    transform: rotate(-35deg);
-    border-radius: 18px 18px 12px 12px;
-}
-
-.finger-index {
-    top: 0;
-    left: 25px;
-    width: 22px;
-    height: 75px;
-}
-
-.finger-middle {
-    top: -5px;
-    left: 50px;
-    width: 22px;
-    height: 80px;
-}
-
-.finger-ring {
-    top: 0;
-    left: 75px;
-    width: 20px;
-    height: 70px;
-}
-
-.finger-pinky {
-    top: 10px;
-    right: 5px;
-    width: 18px;
-    height: 60px;
-}
-
-/* Parmak detayları */
-.finger::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 30%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
-    border-radius: 50%;
-    filter: blur(3px);
-}
-
-/* İdle Animasyon -El hafif sallanıyor */
-.fps-arm.idle {
-    animation: armIdle 4s ease-in-out infinite;
-}
-
-@keyframes armIdle {
-
-    0%,
-    100% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-    }
-
-    25% {
-        transform: translateY(-10px) translateX(-5px) rotate(-1deg);
-    }
-
-    50% {
-        transform: translateY(-15px) translateX(0) rotate(0deg);
-    }
-
-    75% {
-        transform: translateY(-10px) translateX(5px) rotate(1deg);
-    }
-}
-
-/* Vuruş Animasyonu - El hızlıca hareket eder */
-.fps-arm.punching {
-    animation: armPunch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes armPunch {
-    0% {
-        transform: translateX(0) translateY(0) rotate(0deg);
-    }
-
-    30% {
-        transform: translateX(-150px) translateY(-100px) rotate(-20deg) scale(1.1);
-    }
-
-    60% {
-        transform: translateX(-180px) translateY(-120px) rotate(-25deg) scale(1.15);
-    }
-
-    100% {
-        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
-    }
-}
-
-/* Mouse Tracking - El mouse'u takip eder */
-.fps-arm.tracking {
-    transition: transform 0.2s ease-out;
-}
-
-/* ==================== EYE CALIBRATION PANEL ==================== */
-.calibration-btn {
-    margin-left: 15px;
-    padding: 8px 20px;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: linear-gradient(135deg, rgba(255, 200, 100, 0.3), rgba(255, 150, 50, 0.3));
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.calibration-btn:hover {
-    background: linear-gradient(135deg, rgba(255, 200, 100, 0.5), rgba(255, 150, 50, 0.5));
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
-
-.calibration-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-.calibration-panel.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.panel-content {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    padding: 40px;
-    border-radius: 25px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    max-width: 500px;
-}
-
-.panel-content h2 {
-    color: #fff;
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
-
-.panel-content p {
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 25px;
-    font-size: 1.1rem;
-}
-
-.eye-markers {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 25px;
-}
-
-.marker-info {
-    display: flex;
-    justify-content: space-between;
-    color: #fff;
-    font-size: 1.1rem;
-    margin: 10px 0;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
-
-.save-btn,
-.cancel-btn {
-    padding: 12px 30px;
-    margin: 0 10px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.save-btn {
-    background: linear-gradient(135deg, #4ade80, #3b82f6);
-    color: #fff;
-}
-
-.save-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(74, 222, 128, 0.5);
-}
-
-.cancel-btn {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff;
-}
-
-.cancel-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
-}
-
-/* Eye Click Marker */
-.eye-click-marker {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 3px solid #4ade80;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 100;
-    animation: markerPulse 1s ease-in-out infinite;
-}
-
-@keyframes markerPulse {
-
-    0%,
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0.7;
-    }
-}
-
-/* ==================== SCREEN SHAKE EFFECT ==================== */
 @keyframes screenShake {
 
     0%,
@@ -1382,11 +1678,7 @@ h1 {
     }
 }
 
-.container.shake {
-    animation: screenShake 0.5s ease-in-out;
-}
-
-/* ==================== IMPACT WAVE EFFECT ==================== */
+/* ==================== IMPACT WAVE ==================== */
 .impact-wave {
     position: fixed;
     border: 3px solid rgba(255, 255, 255, 0.8);
@@ -1412,30 +1704,165 @@ h1 {
     }
 }
 
-/* ==================== PREMIUM ENHANCED STYLES ==================== */
-.container {
-    position: relative;
-    filter: drop-shadow(0 0 50px rgba(102, 126, 234, 0.3));
+/* ==================== FLASH EFFECT ==================== */
+.flash-overlay {
+    position: fixed;
+    inset: 0;
+    background: white;
+    pointer-events: none;
+    z-index: 9997;
+    animation: flashBang 0.3s ease-out forwards;
 }
 
-header {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    backdrop-filter: blur(20px);
-    padding: 25px;
-    border-radius: 25px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+@keyframes flashBang {
+    0% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
-h1 {
-    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.3));
+/* ==================== SLOW MOTION EFFECT ==================== */
+.slow-motion .face-container {
+    transition: all 0.5s ease-out !important;
 }
 
-/* Enhanced particle effects */
-.particle {
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .menu-title h1 {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+
+    .title-emoji {
+        font-size: 3.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .selection-section {
+        padding: 20px 15px;
+    }
+
+    .selection-section h2 {
+        font-size: 1.2rem;
+    }
+
+    .character-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        max-height: 280px;
+    }
+
+    .character-avatar {
+        width: 55px;
+        height: 55px;
+    }
+
+    .hand-options {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .game-hud {
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .hud-right {
+        gap: 6px;
+    }
+
+    .hud-stat {
+        padding: 4px 10px;
+    }
+
+    .hud-value {
+        font-size: 1.1rem;
+    }
+
+    .combo-count {
+        font-size: 1.3rem;
+    }
+
+    .face-container {
+        max-width: 90vw;
+    }
+
+    .fps-arm {
+        width: 280px;
+        height: 400px;
+        bottom: -60px;
+        right: -30px;
+    }
+
+    .hit-indicator {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-title h1 {
+        font-size: 2rem;
+    }
+
+    .character-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .character-avatar {
+        width: 45px;
+        height: 45px;
+    }
+
+    .character-name {
+        font-size: 0.75rem;
+    }
+
+    .hand-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .start-btn {
+        font-size: 1.1rem;
+        padding: 14px 30px;
+    }
+
+    .fps-arm {
+        width: 220px;
+        height: 320px;
+        bottom: -50px;
+        right: -25px;
+    }
 }
