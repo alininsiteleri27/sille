@@ -4,148 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tokat Atma Oyunu 👋 | Gerçekçi FPS</title>
-    <meta name="description" content="Gerçekçi tokat atma oyunu - Karakterini seç, kolunu seç ve tokat at!">
+    <title>Tokat Atma Oyunu 👋</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- ==================== BAŞLANGIÇ MENÜSÜ ==================== -->
-    <div id="mainMenu" class="main-menu">
-        <div class="menu-bg-effect"></div>
-        <div class="menu-content">
+    <!-- ANA MENÜ -->
+    <div id="mainMenu" class="menu">
+        <div class="menu-inner">
             <div class="menu-title">
-                <span class="title-emoji">👋</span>
+                <span class="wave-emoji">👋</span>
                 <h1>TOKAT ATMA</h1>
-                <p class="subtitle">Gerçekçi FPS Tokat Deneyimi</p>
+                <p>Gerçekçi FPS Tokat Deneyimi</p>
             </div>
-
-            <!-- Karakter Seçimi -->
-            <div class="selection-section">
+            <div class="section">
                 <h2>🎯 Kime Tokat Atacaksın?</h2>
-                <div class="character-grid" id="characterGrid">
-                    <!-- Karakterler JS ile oluşturulacak -->
-                </div>
+                <div class="char-grid" id="charGrid"></div>
             </div>
-
-            <!-- El/Kol Seçimi -->
-            <div class="selection-section">
+            <div class="section">
                 <h2>✋ Elini Seç</h2>
-                <div class="hand-options" id="handOptions">
-                    <!-- El seçenekleri JS ile oluşturulacak -->
-                </div>
+                <div class="hand-grid" id="handGrid"></div>
             </div>
-
-            <!-- Başla Butonu -->
-            <button id="startGameBtn" class="start-btn" disabled>
-                <span class="btn-text">OYUNA BAŞLA</span>
-                <span class="btn-icon">🎮</span>
-            </button>
-            <p class="start-hint" id="startHint">Önce karakter ve el seç!</p>
+            <button id="startBtn" class="start-btn" disabled>OYUNA BAŞLA 🎮</button>
+            <p class="hint" id="hint">Karakter ve el seç!</p>
         </div>
     </div>
 
-    <!-- ==================== OYUN EKRANI ==================== -->
-    <div id="gameScreen" class="game-screen hidden">
-        <!-- Üst Bar -->
-        <div class="game-hud">
-            <div class="hud-left">
-                <button id="backToMenuBtn" class="hud-btn">← Menü</button>
-            </div>
-            <div class="hud-center">
-                <div class="combo-display" id="comboDisplay">
-                    <span class="combo-count" id="comboCount">0</span>
-                    <span class="combo-label">KOMBO</span>
-                </div>
-            </div>
-            <div class="hud-right">
-                <div class="hud-stat">
-                    <span class="hud-label">Tokat</span>
-                    <span class="hud-value" id="slapCount">0</span>
-                </div>
-                <div class="hud-stat">
-                    <span class="hud-label">En Güçlü</span>
-                    <span class="hud-value" id="maxPower">0</span>
-                </div>
-                <div class="hud-stat highlight">
-                    <span class="hud-label">Güç</span>
-                    <span class="hud-value" id="currentPower">0%</span>
-                </div>
+    <!-- OYUN -->
+    <div id="gameUI" class="game-ui hidden">
+        <div class="hud">
+            <button id="backBtn" class="hud-btn">← Menü</button>
+            <div class="hud-stats">
+                <div class="hud-item"><span>Tokat</span><b id="slapCount">0</b></div>
+                <div class="hud-item"><span>Güç</span><b id="curPower">0</b></div>
+                <div class="hud-item combo"><span>Kombo</span><b id="comboCount">0</b></div>
             </div>
         </div>
-
-        <!-- Oyun Alanı -->
-        <div class="game-arena">
-            <!-- Yüz/Karakter Alanı -->
-            <div id="faceContainer" class="face-container">
-                <canvas id="faceCanvas" class="face-canvas"></canvas>
-
-                <!-- Kızarma Overlay -->
-                <div id="redness" class="redness-overlay"></div>
-
-                <!-- Particle Container -->
-                <div id="particleContainer" class="particle-container"></div>
-
-                <!-- Göz Kırpma -->
-                <div id="leftEye" class="eye left-eye"></div>
-                <div id="rightEye" class="eye right-eye"></div>
-
-                <!-- Terleme -->
-                <div id="sweatContainer" class="sweat-container"></div>
-
-                <!-- Dil -->
-                <div id="tongue" class="tongue"></div>
-
-                <!-- Vuruş İzi -->
-                <div id="slapMark" class="slap-mark"></div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="power-bar-wrap">
+            <div class="power-bar">
+                <div id="powerFill" class="power-fill"></div>
             </div>
-
-            <!-- Power Meter -->
-            <div class="power-meter">
-                <div class="power-bar">
-                    <div id="powerFill" class="power-fill"></div>
-                </div>
-                <div class="power-label" id="powerLabel">Yüze kaydır ve tokat at! 👋</div>
-            </div>
+            <div id="powerText" class="power-text">Yüze kaydır! 👋</div>
         </div>
-
-        <!-- FPS KOL + EL SİSTEMİ -->
-        <div id="fpsArm" class="fps-arm">
-            <div class="arm-segment arm-upper-arm" id="upperArm"></div>
-            <div class="arm-segment arm-forearm" id="forearmSegment">
-                <!-- Kıl katmanı -->
-                <div class="hair-layer" id="hairLayer"></div>
-            </div>
-            <div class="arm-hand-container" id="handContainer">
-                <div class="hand-palm" id="handPalm">
-                    <div class="palm-lines"></div>
-                </div>
-                <div class="finger thumb" id="thumb"></div>
-                <div class="finger index-finger"></div>
-                <div class="finger middle-finger"></div>
-                <div class="finger ring-finger"></div>
-                <div class="finger pinky-finger"></div>
-                <!-- Tırnak detayları -->
-                <div class="nail thumb-nail"></div>
-                <div class="nail index-nail"></div>
-                <div class="nail middle-nail"></div>
-                <div class="nail ring-nail"></div>
-                <div class="nail pinky-nail"></div>
-            </div>
-        </div>
-
-        <!-- Vuruş Noktası Göstergesi -->
-        <div id="hitIndicator" class="hit-indicator"></div>
-
-        <!-- Damage Sayıları -->
-        <div id="damageNumbers" class="damage-numbers"></div>
+        <div id="hitText" class="hit-text"></div>
     </div>
-
-    <!-- Ses -->
-    <audio id="slapSound" preload="auto"></audio>
-    <audio id="impactSound" preload="auto"></audio>
 
     <script src="app.js"></script>
 </body>
