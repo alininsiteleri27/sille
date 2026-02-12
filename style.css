@@ -69,6 +69,40 @@ h1 {
     display: block;
 }
 
+/* ==================== Hand Selector ==================== */
+.hand-selector {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.hand-selector label {
+    color: #fff;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.hand-selector select {
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hand-selector select:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hand-selector select option {
+    background: #667eea;
+    color: #fff;
+}
+
 /* ==================== Game Area ==================== */
 .game-area {
     position: relative;
@@ -725,5 +759,221 @@ h1 {
 
     .hit-indicator {
         font-size: 2.5rem;
+    }
+}
+
+/* ==================== ADVANCED EFFECTS ==================== */
+
+/* ==================== Sweat Drops ==================== */
+.sweat-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.sweat-drop {
+    position: absolute;
+    width: 8px;
+    height: 12px;
+    background: linear-gradient(135deg, rgba(100, 200, 255, 0.9) 0%, rgba(50, 150, 255, 0.7) 100%);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(45deg);
+    opacity: 0;
+    animation: sweatDrop 1.2s ease-out forwards;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes sweatDrop {
+    0% {
+        opacity: 0;
+        transform: rotate(45deg) translateY(0) scale(0);
+    }
+
+    10% {
+        opacity: 1;
+        transform: rotate(45deg) translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: rotate(45deg) translateY(80px) scale(0.8);
+    }
+}
+
+/* ==================== Tongue ==================== */
+.tongue {
+    position: absolute;
+    bottom: 35%;
+    left: 50%;
+    transform: translateX(-50%) scaleY(0);
+    width: 60px;
+    height: 40px;
+    background: linear-gradient(180deg, #ff6b9d 0%, #ff4477 100%);
+    border-radius: 0 0 50% 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 12;
+    transform-origin: top center;
+    transition: all 0.3s ease;
+}
+
+.tongue::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 15px;
+    background: rgba(200, 50, 80, 0.5);
+}
+
+.tongue.show {
+    animation: tongueOut 0.6s ease-out forwards;
+}
+
+@keyframes tongueOut {
+    0% {
+        transform: translateX(-50%) scaleY(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateX(-50%) scaleY(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scaleY(1);
+        opacity: 1;
+    }
+}
+
+.tongue.hide {
+    animation: tongueIn 0.4s ease-in forwards;
+}
+
+@keyframes tongueIn {
+    0% {
+        transform: translateX(-50%) scaleY(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scaleY(0);
+        opacity: 0;
+    }
+}
+
+/* ==================== Hand Slap Animation ==================== */
+.hand-slap {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+}
+
+.hand-emoji {
+    font-size: 80px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    transform-origin: center center;
+}
+
+.hand-slap.active {
+    opacity: 1;
+    animation: handSlapMotion 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes handSlapMotion {
+    0% {
+        transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.8);
+    }
+
+    60% {
+        transform: translate(var(--endX), var(--endY)) rotate(var(--rotation)) scale(1.2);
+    }
+
+    100% {
+        transform: translate(var(--endX), var(--endY)) rotate(var(--rotation)) scale(1);
+        opacity: 0;
+    }
+}
+
+/* ==================== Exhaustion Effect ==================== */
+.face-container.exhausted {
+    filter: saturate(0.7) brightness(0.9);
+}
+
+.face-container.exhausted .face-image {
+    animation: exhaustedBreathe 2s ease-in-out infinite;
+}
+
+@keyframes exhaustedBreathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* ==================== Enhanced Redness with Pulse ==================== */
+.redness-overlay.intense {
+    animation: rednessPulse 0.8s ease-out forwards;
+}
+
+@keyframes rednessPulse {
+
+    0%,
+    100% {
+        opacity: var(--intensity);
+    }
+
+    50% {
+        opacity: calc(var(--intensity) * 1.3);
+    }
+}
+
+/* ==================== Dizzy Stars (When Very Tired) ==================== */
+.dizzy-stars {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+}
+
+.dizzy-stars.show {
+    animation: dizzyFloat 3s ease-in-out forwards;
+}
+
+@keyframes dizzyFloat {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) rotate(360deg);
     }
 }
