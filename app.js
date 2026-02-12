@@ -30,6 +30,14 @@ const handTypeSelect = document.getElementById('handType');
 const handSlap = document.getElementById('handSlap');
 const sweatContainer = document.getElementById('sweatContainer');
 const tongue = document.getElementById('tongue');
+const fpsArm = document.getElementById('fpsArm');
+const eyeCalibrationBtn = document.getElementById('eyeCalibrationBtn');
+const eyeCalibrationPanel = document.getElementById('eyeCalibrationPanel');
+const saveEyePos = document.getElementById('saveEyePos');
+const cancelEyePos = document.getElementById('cancelEyePos');
+const leftEyePosEl = document.getElementById('leftEyePos');
+const rightEyePosEl = document.getElementById('rightEyePos');
+const container = document.querySelector('.container');
 
 // ==================== Image Upload System ====================
 function createDefaultFace() {
@@ -283,6 +291,154 @@ function animateHand(startX, startY, endX, endY, power) {
     }, 500);
 }
 
+// ==================== FPS ARM SYSTEM ====================
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let armIdleInterval;
+
+// Mouse tracking
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    updateFPSArm();
+});
+
+// Touch tracking for mobile
+document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+        updateFPSArm();
+    }
+}, { passive: true });
+
+function updateFPSArm() {
+    if (!fpsArm.classList.contains('punching')) {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        const offsetX = (mouseX - centerX) / 15;
+        const offsetY = (mouseY - centerY) / 15;
+        const rotation = (mouseX - centerX) / 80;
+
+        fpsArm.style.transform = `translateX(${offsetX}px) translateY(${offsetY}px) rotate(${rotation}deg)`;
+    }
+}
+
+// Idle animation
+function startArmIdle() {
+    fpsArm.classList.add('idle');
+}
+
+function stopArmIdle() {
+    fpsArm.classList.remove('idle');
+}
+
+// Punch animation
+function triggerArmPunch() {
+    stopArmIdle();
+    fpsArm.classList.remove('punching');
+    void fpsArm.offsetWidth; // Force reflow
+    fpsArm.classList.add('punching');
+
+    setTimeout(() => {
+        fpsArm.classList.remove('punching');
+        startArmIdle();
+    }, 400);
+}
+
+// Start idle on load
+setTimeout(() => {
+    startArmIdle();
+}, 1000);
+
+// ==================== EYE CALIBRATION SYSTEM ====================
+let calibrationMode = false;
+let eyePositions = { left: null, right: null };
+let clickCount = 0;
+
+eyeCalibrationBtn.addEventListener('click', () => {
+    eyeCalibrationPanel.classList.remove('hidden');
+    calibrationMode = true;
+    clickCount = 0;
+    eyePositions = { left: null, right: null };
+    leftEyePosEl.textContent = '-';
+    rightEyePosEl.textContent = '-';
+});
+
+cancelEyePos.addEventListener('click', () => {
+    eyeCalibrationPanel.classList.add('hidden');
+    calibrationMode = false;
+    clickCount = 0;
+    // Remove markers
+    document.querySelectorAll('.eye-click-marker').forEach(m => m.remove());
+});
+
+saveEyePos.addEventListener('click', () => {
+    if (eyePositions.left && eyePositions.right) {
+        // Update eye positions
+        leftEye.style.left = eyePositions.left.x + '%';
+        leftEye.style.top = eyePositions.left.y + '%';
+        rightEye.style.left = eyePositions.right.x + '%';
+        rightEye.style.top = eyePositions.right.y + '%';
+
+        eyeCalibrationPanel.classList.add('hidden');
+        calibrationMode = false;
+        clickCount = 0;
+        document.querySelectorAll('.eye-click-marker').forEach(m => m.remove());
+    }
+});
+
+// Click handler for eye calibration
+faceContainer.addEventListener('click', (e) => {
+    if (!calibrationMode) return;
+
+    const rect = faceContainer.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    // Create visual marker
+    const marker = document.createElement('div');
+    marker.className = 'eye-click-marker';
+    marker.style.left = e.clientX - rect.left + 'px';
+    marker.style.top = e.clientY - rect.top + 'px';
+    faceContainer.appendChild(marker);
+
+    if (clickCount === 0) {
+        // First click - left eye
+        eyePositions.left = { x: x.toFixed(1), y: y.toFixed(1) };
+        leftEyePosEl.textContent = `${x.toFixed(0)}%, ${y.toFixed(0)}%`;
+        clickCount++;
+    } else if (clickCount === 1) {
+        // Second click - right eye
+        eyePositions.right = { x: x.toFixed(1), y: y.toFixed(1) };
+        rightEyePosEl.textContent = `${x.toFixed(0)}%, ${y.toFixed(0)}%`;
+        clickCount++;
+    }
+});
+
+// ==================== SCREEN SHAKE ====================
+function triggerScreenShake() {
+    container.classList.remove('shake');
+    void container.offsetWidth;
+    container.classList.add('shake');
+
+    setTimeout(() => {
+        container.classList.remove('shake');
+    }, 500);
+}
+
+// ==================== IMPACT WAVE ====================
+function createImpactWave(x, y) {
+    const wave = document.createElement('div');
+    wave.className = 'impact-wave';
+    wave.style.left = (x - 10) + 'px';
+    wave.style.top = (y - 10) + 'px';
+    document.body.appendChild(wave);
+
+    setTimeout(() => wave.remove(), 600);
+}
+
 // ==================== Sound System ====================
 class SoundSystem {
     constructor() {
@@ -507,6 +663,17 @@ function handleSlap(x, y, power) {
     blinkEyes();
     showHitIndicator(power);
     createParticles(x, y, power);
+
+    // NEW: FPS Effects
+    triggerArmPunch(); // FPS kol animasyonu
+
+    if (power > 40) {
+        triggerScreenShake(); // Ekran sarsıntısı
+    }
+
+    // Impact wave
+    const rect = faceContainer.getBoundingClientRect();
+    createImpactWave(rect.left + x, rect.top + y);
 
     // NEW: Exhaustion and reactions
     updateExhaustion(power);
