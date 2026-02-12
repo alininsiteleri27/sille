@@ -35,33 +35,33 @@ const gameState = {
 };
 
 // ==================== DOM ELEMENTS ====================
-const $ = id => document.getElementById(id);
-const mainMenu = $('mainMenu');
-const gameScreen = $('gameScreen');
-const characterGrid = $('characterGrid');
-const handOptions = $('handOptions');
-const startGameBtn = $('startGameBtn');
-const startHint = $('startHint');
-const backToMenuBtn = $('backToMenuBtn');
-const faceContainer = $('faceContainer');
-const faceCanvas = $('faceCanvas');
-const redness = $('redness');
-const particleContainer = $('particleContainer');
-const leftEye = $('leftEye');
-const rightEye = $('rightEye');
-const powerFill = $('powerFill');
-const powerLabel = $('powerLabel');
-const hitIndicator = $('hitIndicator');
-const slapCountEl = $('slapCount');
-const maxPowerEl = $('maxPower');
-const currentPowerEl = $('currentPower');
-const sweatContainer = $('sweatContainer');
-const tongue = $('tongue');
-const fpsArm = $('fpsArm');
-const comboDisplay = $('comboDisplay');
-const comboCountEl = $('comboCount');
-const damageNumbers = $('damageNumbers');
-const hairLayer = $('hairLayer');
+function getEl(id) { return document.getElementById(id); }
+const mainMenu = getEl('mainMenu');
+const gameScreen = getEl('gameScreen');
+const characterGrid = getEl('characterGrid');
+const handOptions = getEl('handOptions');
+const startGameBtn = getEl('startGameBtn');
+const startHint = getEl('startHint');
+const backToMenuBtn = getEl('backToMenuBtn');
+const faceContainer = getEl('faceContainer');
+const faceCanvas = getEl('faceCanvas');
+const redness = getEl('redness');
+const particleContainer = getEl('particleContainer');
+const leftEye = getEl('leftEye');
+const rightEye = getEl('rightEye');
+const powerFill = getEl('powerFill');
+const powerLabel = getEl('powerLabel');
+const hitIndicator = getEl('hitIndicator');
+const slapCountEl = getEl('slapCount');
+const maxPowerEl = getEl('maxPower');
+const currentPowerEl = getEl('currentPower');
+const sweatContainer = getEl('sweatContainer');
+const tongue = getEl('tongue');
+const fpsArm = getEl('fpsArm');
+const comboDisplay = getEl('comboDisplay');
+const comboCountEl = getEl('comboCount');
+const damageNumbers = getEl('damageNumbers');
+const hairLayer = getEl('hairLayer');
 
 // ==================== CANVAS - KARAKTER ÇİZİMİ ====================
 function drawCharacter(canvas, char, size = 500) {
@@ -456,7 +456,7 @@ function showDamageNumber(x, y, power) {
 
 // ==================== VURUŞ İZLERİ ====================
 function showSlapMark(x, y, power) {
-    const mark = $('slapMark');
+    const mark = getEl('slapMark');
     const intensity = Math.min(power / 80, 1);
     mark.style.left = (x - 40) + 'px';
     mark.style.top = (y - 50) + 'px';
