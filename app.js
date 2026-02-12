@@ -1,850 +1,703 @@
-// ==================== Game State ====================
+// ==================== KARAKTER TANIMLARI ====================
+const CHARACTERS = [
+    { id: 'ahmet', name: 'Ahmet', tag: 'Sinirli Komşu', skinTone: '#e8c8a0', hairColor: '#3b2614', eyeColor: '#3b2614', hasBeard: true, gender: 'male' },
+    { id: 'mehmet', name: 'Mehmet', tag: 'Ukala Amca', skinTone: '#d4a574', hairColor: '#1a1a1a', eyeColor: '#2b1a0a', hasBeard: false, gender: 'male' },
+    { id: 'ayse', name: 'Ayşe', tag: 'Dedikocucu Teyze', skinTone: '#fce4d2', hairColor: '#8b4513', eyeColor: '#4a3520', hasBeard: false, gender: 'female' },
+    { id: 'fatma', name: 'Fatma', tag: 'Kıskanç Yenge', skinTone: '#f0c8a8', hairColor: '#2b1a0a', eyeColor: '#3b2614', hasBeard: false, gender: 'female' },
+    { id: 'hasan', name: 'Hasan', tag: 'Keko Dayı', skinTone: '#c49563', hairColor: '#1a1a1a', eyeColor: '#1a1a1a', hasBeard: true, gender: 'male' },
+    { id: 'ali', name: 'Ali', tag: 'Mahallenin Kabadayısı', skinTone: '#d4a574', hairColor: '#3b2614', eyeColor: '#2b1a0a', hasBeard: true, gender: 'male' },
+    { id: 'zeynep', name: 'Zeynep', tag: 'Drama Queen', skinTone: '#fde8d8', hairColor: '#c0392b', eyeColor: '#27ae60', hasBeard: false, gender: 'female' },
+    { id: 'emre', name: 'Emre', tag: 'Küstah Çocuk', skinTone: '#f5d0b0', hairColor: '#8b7355', eyeColor: '#3b2614', hasBeard: false, gender: 'male' },
+    { id: 'derya', name: 'Derya', tag: 'Patron Hanım', skinTone: '#f0c8a8', hairColor: '#1a1a1a', eyeColor: '#2c3e50', hasBeard: false, gender: 'female' },
+    { id: 'burak', name: 'Burak', tag: 'Gym Abisi', skinTone: '#c49563', hairColor: '#3b2614', eyeColor: '#2b1a0a', hasBeard: true, gender: 'male' },
+    { id: 'selin', name: 'Selin', tag: 'Laf Sokan Arkadaş', skinTone: '#fce4d2', hairColor: '#d4a017', eyeColor: '#3b2614', hasBeard: false, gender: 'female' },
+    { id: 'kemal', name: 'Kemal', tag: 'Sinir Bozucu Müdür', skinTone: '#e8c8a0', hairColor: '#808080', eyeColor: '#2b1a0a', hasBeard: false, gender: 'male' },
+];
+
+const HAND_TYPES = [
+    { id: 'female-light', name: 'Kadın (Açık)', desc: 'İnce & zarif', skinClass: 'skin-female-light', hairy: false },
+    { id: 'female-medium', name: 'Kadın (Esmer)', desc: 'İnce & güçlü', skinClass: 'skin-female-medium', hairy: false },
+    { id: 'male-light', name: 'Erkek (Açık)', desc: 'Güçlü & kılsız', skinClass: 'skin-male-light', hairy: false },
+    { id: 'male-medium', name: 'Erkek (Esmer)', desc: 'Güçlü & sert', skinClass: 'skin-male-medium', hairy: false },
+    { id: 'male-hairy', name: 'Erkek (Kıllı)', desc: 'Ekstra güçlü', skinClass: 'skin-male-hairy', hairy: true },
+    { id: 'male-dark', name: 'Erkek (Koyu)', desc: 'Ağır yumruk', skinClass: 'skin-male-dark', hairy: false },
+];
+
+// ==================== GAME STATE ====================
 const gameState = {
-    slapCount: 0,
-    maxPower: 0,
-    currentPower: 0,
-    isAnimating: false,
+    slapCount: 0, maxPower: 0, currentPower: 0,
+    isAnimating: false, exhaustion: 0, combo: 0,
+    comboTimer: null, lastSlapTime: 0,
+    selectedCharacter: null, selectedHand: null,
     touchStart: { x: 0, y: 0, time: 0 },
     touchEnd: { x: 0, y: 0, time: 0 },
-    exhaustion: 0, // 0-100, increases with each slap
-    selectedHand: 'female-light'
+    totalDamage: 0, slapMarks: []
 };
 
-// ==================== DOM Elements ====================
-const faceContainer = document.getElementById('faceContainer');
-const faceImage = document.getElementById('faceImage');
-const redness = document.getElementById('redness');
-const particleContainer = document.getElementById('particleContainer');
-const leftEye = document.getElementById('leftEye');
-const rightEye = document.getElementById('rightEye');
-const powerFill = document.getElementById('powerFill');
-const hitIndicator = document.getElementById('hitIndicator');
-const slapCountEl = document.getElementById('slapCount');
-const maxPowerEl = document.getElementById('maxPower');
-const currentPowerEl = document.getElementById('currentPower');
-const uploadSection = document.getElementById('uploadSection');
-const uploadBtn = document.getElementById('uploadBtn');
-const useDefaultBtn = document.getElementById('useDefaultBtn');
-const imageUpload = document.getElementById('imageUpload');
-const handTypeSelect = document.getElementById('handType');
-const handSlap = document.getElementById('handSlap');
-const sweatContainer = document.getElementById('sweatContainer');
-const tongue = document.getElementById('tongue');
-const fpsArm = document.getElementById('fpsArm');
-const eyeCalibrationBtn = document.getElementById('eyeCalibrationBtn');
-const eyeCalibrationPanel = document.getElementById('eyeCalibrationPanel');
-const saveEyePos = document.getElementById('saveEyePos');
-const cancelEyePos = document.getElementById('cancelEyePos');
-const leftEyePosEl = document.getElementById('leftEyePos');
-const rightEyePosEl = document.getElementById('rightEyePos');
-const container = document.querySelector('.container');
+// ==================== DOM ELEMENTS ====================
+const $ = id => document.getElementById(id);
+const mainMenu = $('mainMenu');
+const gameScreen = $('gameScreen');
+const characterGrid = $('characterGrid');
+const handOptions = $('handOptions');
+const startGameBtn = $('startGameBtn');
+const startHint = $('startHint');
+const backToMenuBtn = $('backToMenuBtn');
+const faceContainer = $('faceContainer');
+const faceCanvas = $('faceCanvas');
+const redness = $('redness');
+const particleContainer = $('particleContainer');
+const leftEye = $('leftEye');
+const rightEye = $('rightEye');
+const powerFill = $('powerFill');
+const powerLabel = $('powerLabel');
+const hitIndicator = $('hitIndicator');
+const slapCountEl = $('slapCount');
+const maxPowerEl = $('maxPower');
+const currentPowerEl = $('currentPower');
+const sweatContainer = $('sweatContainer');
+const tongue = $('tongue');
+const fpsArm = $('fpsArm');
+const comboDisplay = $('comboDisplay');
+const comboCountEl = $('comboCount');
+const damageNumbers = $('damageNumbers');
+const hairLayer = $('hairLayer');
 
-// ==================== Image Upload System ====================
-function createDefaultFace() {
-    // Create a canvas with a simple face
-    const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 500;
+// ==================== CANVAS - KARAKTER ÇİZİMİ ====================
+function drawCharacter(canvas, char, size = 500) {
+    canvas.width = size; canvas.height = size;
     const ctx = canvas.getContext('2d');
+    const cx = size / 2, cy = size / 2;
+    const s = size / 500; // scale factor
 
-    // Background gradient (skin tone)
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#f4c2a0');
-    gradient.addColorStop(1, '#d9a88a');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Arka plan
+    const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.6);
+    bg.addColorStop(0, '#2a2a4a'); bg.addColorStop(1, '#1a1a2e');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, size, size);
 
-    // Add some texture
-    for (let i = 0; i < 1000; i++) {
-        ctx.fillStyle = `rgba(${Math.random() * 50}, ${Math.random() * 30}, ${Math.random() * 20}, 0.1)`;
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+    // Boyun
+    ctx.fillStyle = char.skinTone;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 130 * s, 45 * s, 60 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Omuzlar
+    ctx.fillStyle = '#333355';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 200 * s, 160 * s, 60 * s, 0, 0, Math.PI);
+    ctx.fill();
+
+    // Yüz
+    const faceGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 160 * s);
+    faceGrad.addColorStop(0, lightenColor(char.skinTone, 20));
+    faceGrad.addColorStop(1, char.skinTone);
+    ctx.fillStyle = faceGrad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 140 * s, 175 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Yüz gölge
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    ctx.beginPath();
+    ctx.ellipse(cx + 20 * s, cy + 30 * s, 120 * s, 150 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Saç
+    ctx.fillStyle = char.hairColor;
+    if (char.gender === 'female') {
+        // Uzun saç
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 80 * s, 150 * s, 120 * s, 0, Math.PI, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(cx - 150 * s, cy - 80 * s, 60 * s, 200 * s);
+        ctx.fillRect(cx + 90 * s, cy - 80 * s, 60 * s, 200 * s);
+        // Saç parlak
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.beginPath();
+        ctx.ellipse(cx - 30 * s, cy - 120 * s, 50 * s, 30 * s, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 90 * s, 145 * s, 100 * s, 0, Math.PI, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(cx - 140 * s, cy - 90 * s, 30 * s, 50 * s);
+        ctx.fillRect(cx + 110 * s, cy - 90 * s, 30 * s, 50 * s);
     }
 
-    // Face outline (oval)
-    ctx.fillStyle = '#e0b090';
+    // Kulaklar
+    ctx.fillStyle = char.skinTone;
     ctx.beginPath();
-    ctx.ellipse(250, 250, 180, 220, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Shadows for depth
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    ctx.beginPath();
-    ctx.ellipse(250, 280, 150, 180, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes
-    ctx.fillStyle = '#ffffff';
-    // Left eye white
-    ctx.beginPath();
-    ctx.ellipse(180, 200, 30, 20, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // Right eye white
-    ctx.beginPath();
-    ctx.ellipse(320, 200, 30, 20, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Pupils
-    ctx.fillStyle = '#3b2614';
-    // Left pupil
-    ctx.beginPath();
-    ctx.arc(180, 200, 12, 0, Math.PI * 2);
-    ctx.fill();
-    // Right pupil
-    ctx.beginPath();
-    ctx.arc(320, 200, 12, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eye shine
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(185, 195, 5, 0, Math.PI * 2);
+    ctx.ellipse(cx - 140 * s, cy, 20 * s, 30 * s, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(325, 195, 5, 0, Math.PI * 2);
+    ctx.ellipse(cx + 140 * s, cy, 20 * s, 30 * s, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Eyebrows
-    ctx.strokeStyle = '#3b2614';
-    ctx.lineWidth = 8;
-    ctx.lineCap = 'round';
-    // Left eyebrow
-    ctx.beginPath();
-    ctx.moveTo(140, 160);
-    ctx.quadraticCurveTo(180, 150, 220, 160);
-    ctx.stroke();
-    // Right eyebrow
-    ctx.beginPath();
-    ctx.moveTo(280, 160);
-    ctx.quadraticCurveTo(320, 150, 360, 160);
-    ctx.stroke();
+    // Gözler
+    const eyeY = cy - 20 * s;
+    // Beyaz
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.ellipse(cx - 50 * s, eyeY, 28 * s, 18 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + 50 * s, eyeY, 28 * s, 18 * s, 0, 0, Math.PI * 2); ctx.fill();
+    // İris
+    ctx.fillStyle = char.eyeColor;
+    ctx.beginPath(); ctx.arc(cx - 50 * s, eyeY, 11 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + 50 * s, eyeY, 11 * s, 0, Math.PI * 2); ctx.fill();
+    // Pupil
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(cx - 50 * s, eyeY, 5 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + 50 * s, eyeY, 5 * s, 0, Math.PI * 2); ctx.fill();
+    // Parlak
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx - 45 * s, eyeY - 5 * s, 4 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + 55 * s, eyeY - 5 * s, 4 * s, 0, Math.PI * 2); ctx.fill();
 
-    // Nose
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    ctx.beginPath();
-    ctx.moveTo(250, 220);
-    ctx.lineTo(230, 280);
-    ctx.lineTo(250, 290);
-    ctx.lineTo(270, 280);
-    ctx.closePath();
-    ctx.fill();
+    // Kaşlar
+    ctx.strokeStyle = char.hairColor; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx - 80 * s, eyeY - 35 * s);
+    ctx.quadraticCurveTo(cx - 50 * s, eyeY - 45 * s, cx - 20 * s, eyeY - 35 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 20 * s, eyeY - 35 * s);
+    ctx.quadraticCurveTo(cx + 50 * s, eyeY - 45 * s, cx + 80 * s, eyeY - 35 * s); ctx.stroke();
 
-    // Nose highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.beginPath();
-    ctx.ellipse(245, 250, 8, 15, -0.3, 0, Math.PI * 2);
-    ctx.fill();
+    // Burun
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx - 15 * s, cy + 50 * s);
+    ctx.lineTo(cx, cy + 55 * s); ctx.lineTo(cx + 15 * s, cy + 50 * s); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath(); ctx.ellipse(cx - 3 * s, cy + 20 * s, 5 * s, 12 * s, -0.2, 0, Math.PI * 2); ctx.fill();
 
-    // Mouth
-    ctx.strokeStyle = '#a0522d';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(200, 340);
-    ctx.quadraticCurveTo(250, 360, 300, 340);
-    ctx.stroke();
+    // Ağız
+    ctx.strokeStyle = darkenColor(char.skinTone, 40); ctx.lineWidth = 4 * s;
+    ctx.beginPath(); ctx.moveTo(cx - 40 * s, cy + 90 * s);
+    ctx.quadraticCurveTo(cx, cy + 105 * s, cx + 40 * s, cy + 90 * s); ctx.stroke();
 
-    // Cheeks (blush)
-    ctx.fillStyle = 'rgba(255, 150, 150, 0.3)';
-    ctx.beginPath();
-    ctx.ellipse(140, 260, 40, 30, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(360, 260, 40, 30, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Yanaklar
+    ctx.fillStyle = 'rgba(255,120,120,0.15)';
+    ctx.beginPath(); ctx.ellipse(cx - 90 * s, cy + 30 * s, 35 * s, 25 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + 90 * s, cy + 30 * s, 35 * s, 25 * s, 0, 0, Math.PI * 2); ctx.fill();
 
-    return canvas.toDataURL('image/png');
-}
-
-function loadImage(src) {
-    faceImage.src = src;
-    faceImage.style.display = 'block';
-    uploadSection.classList.add('hidden');
-    faceContainer.style.cursor = 'pointer';
-}
-
-// Upload button click
-uploadBtn.addEventListener('click', () => {
-    imageUpload.click();
-});
-
-// File upload handler
-imageUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            loadImage(event.target.result);
-        };
-        reader.readAsDataURL(file);
+    // Sakal
+    if (char.hasBeard) {
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        for (let i = 0; i < 300; i++) {
+            const bx = cx + (Math.random() - 0.5) * 180 * s;
+            const by = cy + 60 * s + Math.random() * 100 * s;
+            const dist = Math.sqrt((bx - cx) ** 2 + (by - (cy + 100 * s)) ** 2);
+            if (dist < 100 * s) {
+                ctx.fillRect(bx, by, 1.5 * s, 4 * s);
+            }
+        }
     }
+}
+
+function lightenColor(hex, amount) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.min(255, (num >> 16) + amount);
+    const g = Math.min(255, ((num >> 8) & 0xFF) + amount);
+    const b = Math.min(255, (num & 0xFF) + amount);
+    return `rgb(${r},${g},${b})`;
+}
+
+function darkenColor(hex, amount) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.max(0, (num >> 16) - amount);
+    const g = Math.max(0, ((num >> 8) & 0xFF) - amount);
+    const b = Math.max(0, (num & 0xFF) - amount);
+    return `rgb(${r},${g},${b})`;
+}
+
+// ==================== MENÜ SİSTEMİ ====================
+function buildMenu() {
+    // Karakter kartları
+    characterGrid.innerHTML = '';
+    CHARACTERS.forEach(char => {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        card.dataset.id = char.id;
+
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'character-avatar';
+        const miniCanvas = document.createElement('canvas');
+        drawCharacter(miniCanvas, char, 140);
+        avatarDiv.appendChild(miniCanvas);
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'character-name';
+        nameEl.textContent = char.name;
+
+        const tagEl = document.createElement('div');
+        tagEl.className = 'character-tag';
+        tagEl.textContent = char.tag;
+
+        card.append(avatarDiv, nameEl, tagEl);
+        card.addEventListener('click', () => selectCharacter(char, card));
+        characterGrid.appendChild(card);
+    });
+
+    // El seçenekleri
+    handOptions.innerHTML = '';
+    HAND_TYPES.forEach(hand => {
+        const opt = document.createElement('div');
+        opt.className = 'hand-option';
+        opt.dataset.id = hand.id;
+
+        const preview = document.createElement('div');
+        preview.className = 'hand-preview';
+        // Renk önizleme
+        const colors = { 'skin-female-light': '#fce4d2', 'skin-female-medium': '#d4a574', 'skin-male-light': '#e8c8a0', 'skin-male-medium': '#c49563', 'skin-male-hairy': '#d4a574', 'skin-male-dark': '#8b6340' };
+        preview.style.background = `linear-gradient(135deg, ${lightenColor(colors[hand.skinClass] || '#d4a574', 15)}, ${colors[hand.skinClass] || '#d4a574'})`;
+        preview.style.borderRadius = '30px 30px 15px 15px';
+        preview.style.border = '2px solid rgba(255,255,255,0.15)';
+        if (hand.hairy) {
+            preview.style.backgroundImage = `linear-gradient(135deg, ${lightenColor(colors[hand.skinClass], 15)}, ${colors[hand.skinClass]}), repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px)`;
+        }
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'hand-option-name';
+        nameEl.textContent = hand.name;
+
+        const descEl = document.createElement('div');
+        descEl.className = 'hand-option-desc';
+        descEl.textContent = hand.desc;
+
+        opt.append(preview, nameEl, descEl);
+        opt.addEventListener('click', () => selectHand(hand, opt));
+        handOptions.appendChild(opt);
+    });
+}
+
+function selectCharacter(char, card) {
+    document.querySelectorAll('.character-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    gameState.selectedCharacter = char;
+    checkStartReady();
+}
+
+function selectHand(hand, opt) {
+    document.querySelectorAll('.hand-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    gameState.selectedHand = hand;
+    checkStartReady();
+}
+
+function checkStartReady() {
+    const ready = gameState.selectedCharacter && gameState.selectedHand;
+    startGameBtn.disabled = !ready;
+    startHint.textContent = ready ? 'Hazırsın! Başla!' : 'Önce karakter ve el seç!';
+    startHint.style.opacity = ready ? '0' : '0.7';
+}
+
+// ==================== OYUN BAŞLATMA ====================
+startGameBtn.addEventListener('click', () => {
+    if (!gameState.selectedCharacter || !gameState.selectedHand) return;
+    mainMenu.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
+
+    // Karakter çiz
+    drawCharacter(faceCanvas, gameState.selectedCharacter, 500);
+
+    // Kol skin uygula
+    fpsArm.className = 'fps-arm ' + gameState.selectedHand.skinClass;
+
+    // Kılları oluştur
+    generateArmHairs();
+
+    // İdle başla
+    setTimeout(() => fpsArm.classList.add('idle'), 500);
+
+    // Reset
+    gameState.slapCount = 0; gameState.maxPower = 0; gameState.combo = 0;
+    gameState.exhaustion = 0; gameState.totalDamage = 0; gameState.slapMarks = [];
+    slapCountEl.textContent = '0'; maxPowerEl.textContent = '0';
+    currentPowerEl.textContent = '0%'; comboCountEl.textContent = '0';
 });
 
-// Use default face
-useDefaultBtn.addEventListener('click', () => {
-    const defaultFace = createDefaultFace();
-    loadImage(defaultFace);
+backToMenuBtn.addEventListener('click', () => {
+    gameScreen.classList.add('hidden');
+    mainMenu.classList.remove('hidden');
+    fpsArm.classList.remove('idle', 'slapping', 'strong-slap');
 });
 
-// ==================== Hand Selection System ====================
-const handEmojis = {
-    'female-light': '✋🏻',
-    'female-medium': '✋🏽',
-    'male-light': '✋🏻',
-    'male-medium': '✋🏽',
-    'male-hairy': '✋🏿'
-};
+// ==================== KIL SİSTEMİ ====================
+function generateArmHairs() {
+    hairLayer.innerHTML = '';
+    if (!gameState.selectedHand || !gameState.selectedHand.hairy) return;
 
-handTypeSelect.addEventListener('change', (e) => {
-    gameState.selectedHand = e.target.value;
-    handSlap.querySelector('.hand-emoji').textContent = handEmojis[gameState.selectedHand];
+    for (let i = 0; i < 80; i++) {
+        const hair = document.createElement('div');
+        hair.className = 'arm-hair';
+        hair.style.left = (10 + Math.random() * 80) + '%';
+        hair.style.top = (5 + Math.random() * 85) + '%';
+        hair.style.height = (6 + Math.random() * 10) + 'px';
+        hair.style.transform = `rotate(${-20 + Math.random() * 40}deg)`;
+        hair.style.opacity = (0.3 + Math.random() * 0.4).toString();
+        hairLayer.appendChild(hair);
+    }
+    hairLayer.classList.add('visible');
+}
+
+// ==================== SES SİSTEMİ ====================
+class SoundSystem {
+    constructor() { this.ctx = null; this.ready = false; }
+    init() {
+        if (this.ready) return;
+        try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.ready = true; } catch (e) { }
+    }
+    playSlap(power) {
+        this.init(); if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.frequency.value = 200 - power * 0.8;
+        osc.type = 'triangle';
+        const now = this.ctx.currentTime;
+        gain.gain.setValueAtTime(Math.min(power / 120, 0.8), now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+
+        // İmpact
+        setTimeout(() => {
+            const osc2 = this.ctx.createOscillator();
+            const g2 = this.ctx.createGain();
+            const f = this.ctx.createBiquadFilter();
+            osc2.connect(f); f.connect(g2); g2.connect(this.ctx.destination);
+            osc2.frequency.value = 60 + power * 0.5;
+            osc2.type = 'sawtooth';
+            f.type = 'lowpass'; f.frequency.value = 150 + power * 3;
+            const n = this.ctx.currentTime;
+            g2.gain.setValueAtTime(Math.min(power / 100, 0.9), n);
+            g2.gain.exponentialRampToValueAtTime(0.01, n + 0.12);
+            osc2.start(n); osc2.stop(n + 0.12);
+        }, 30);
+    }
+}
+const soundSystem = new SoundSystem();
+
+// ==================== MOUSE İLE KOL TAKİBİ ====================
+let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+
+document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    updateArmPosition();
 });
 
-// ==================== Sweat System ====================
+document.addEventListener('touchmove', e => {
+    if (e.touches.length) { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; updateArmPosition(); }
+}, { passive: true });
+
+function updateArmPosition() {
+    if (fpsArm.classList.contains('slapping') || fpsArm.classList.contains('strong-slap')) return;
+    const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    const ox = (mouseX - cx) / 18, oy = (mouseY - cy) / 18;
+    const rot = (mouseX - cx) / 90;
+    fpsArm.style.transform = `translateX(${ox}px) translateY(${oy}px) rotate(${rot}deg)`;
+}
+
+// ==================== VURUŞ ANİMASYONLARI ====================
+function triggerArmSlap(power) {
+    fpsArm.classList.remove('idle', 'slapping', 'strong-slap');
+    void fpsArm.offsetWidth;
+    if (power > 70) {
+        fpsArm.classList.add('strong-slap');
+        setTimeout(() => { fpsArm.classList.remove('strong-slap'); fpsArm.classList.add('idle'); }, 600);
+    } else {
+        fpsArm.classList.add('slapping');
+        setTimeout(() => { fpsArm.classList.remove('slapping'); fpsArm.classList.add('idle'); }, 500);
+    }
+}
+
+function triggerScreenShake(power) {
+    gameScreen.classList.remove('screen-shake');
+    void gameScreen.offsetWidth;
+    gameScreen.classList.add('screen-shake');
+    setTimeout(() => gameScreen.classList.remove('screen-shake'), 500);
+
+    if (power > 80) {
+        const flash = document.createElement('div');
+        flash.className = 'flash-overlay';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 300);
+    }
+}
+
+// ==================== PARÇACIK SİSTEMİ ====================
+function createParticles(x, y, power) {
+    const count = Math.floor(power / 6) + 8;
+    const emojis = ['⭐', '💥', '💫', '✨', '💦', '💢', '🌟', '💨', '😵'];
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        const angle = Math.random() * Math.PI * 1.5 + Math.PI * 0.25;
+        const vel = 50 + Math.random() * power * 2.5;
+        p.style.left = x + (Math.random() * 40 - 20) + 'px';
+        p.style.top = y + (Math.random() * 40 - 20) + 'px';
+        p.style.setProperty('--tx', Math.cos(angle) * vel + 'px');
+        p.style.setProperty('--ty', (Math.sin(angle) * vel - Math.random() * 30) + 'px');
+        p.style.setProperty('--rot', (Math.random() * 1080 - 540) + 'deg');
+        p.style.fontSize = (18 + Math.random() * power / 4) + 'px';
+        p.style.animationDelay = Math.random() * 0.1 + 's';
+        particleContainer.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+    }
+}
+
+// ==================== HASAR SAYILARI ====================
+function showDamageNumber(x, y, power) {
+    const num = document.createElement('div');
+    num.className = 'damage-num' + (power > 75 ? ' critical' : '');
+    num.textContent = '-' + power;
+    num.style.left = x + 'px';
+    num.style.top = y + 'px';
+    num.style.fontSize = (1.5 + power / 50) + 'rem';
+    damageNumbers.appendChild(num);
+    setTimeout(() => num.remove(), 1000);
+}
+
+// ==================== VURUŞ İZLERİ ====================
+function showSlapMark(x, y, power) {
+    const mark = $('slapMark');
+    const intensity = Math.min(power / 80, 1);
+    mark.style.left = (x - 40) + 'px';
+    mark.style.top = (y - 50) + 'px';
+    mark.style.background = `radial-gradient(ellipse, rgba(255,50,50,${0.4 * intensity}) 0%, transparent 70%)`;
+    mark.style.width = (60 + power * 0.4) + 'px';
+    mark.style.height = (80 + power * 0.4) + 'px';
+    mark.classList.remove('visible');
+    void mark.offsetWidth;
+    mark.classList.add('visible');
+    setTimeout(() => { mark.style.opacity = '0'; }, 2000 + power * 15);
+}
+
+// ==================== KOMBO SİSTEMİ ====================
+function updateCombo() {
+    const now = Date.now();
+    if (now - gameState.lastSlapTime < 2000) {
+        gameState.combo++;
+    } else {
+        gameState.combo = 1;
+    }
+    gameState.lastSlapTime = now;
+    comboCountEl.textContent = gameState.combo;
+
+    if (gameState.combo > 1) {
+        comboDisplay.classList.remove('active');
+        void comboDisplay.offsetWidth;
+        comboDisplay.classList.add('active');
+    }
+
+    clearTimeout(gameState.comboTimer);
+    gameState.comboTimer = setTimeout(() => {
+        gameState.combo = 0;
+        comboCountEl.textContent = '0';
+    }, 2500);
+}
+
+// ==================== VISUAL EFFECTS ====================
+function showRedness(power, hitX, hitY) {
+    const rect = faceContainer.getBoundingClientRect();
+    const rx = (hitX / rect.width) * 100, ry = (hitY / rect.height) * 100;
+    const intensity = Math.min(power / 75, 1);
+    redness.style.background = `radial-gradient(circle at ${rx}% ${ry}%, rgba(255,0,0,${0.7 * intensity}) 0%, rgba(255,80,80,${0.5 * intensity}) 20%, rgba(255,0,0,0) 50%)`;
+    redness.style.opacity = intensity;
+    setTimeout(() => { redness.style.opacity = '0'; }, 600 + power * 8);
+}
+
+function blinkEyes() {
+    leftEye.classList.add('blink'); rightEye.classList.add('blink');
+    setTimeout(() => { leftEye.classList.remove('blink'); rightEye.classList.remove('blink'); }, 300);
+}
+
+function showHitIndicator(power) {
+    let text = power < 30 ? 'PAT! 👋' : power < 60 ? 'TOKAT! 💥' : power < 85 ? 'ŞAMAR! 💢' : 'SÜPER TOKAT! ⭐';
+    if (gameState.combo >= 3) text = `${gameState.combo}x KOMBO! 🔥`;
+    if (gameState.combo >= 5) text = `${gameState.combo}x ÇILDIRDI! 💀`;
+    hitIndicator.textContent = text;
+    hitIndicator.classList.remove('show');
+    void hitIndicator.offsetWidth;
+    hitIndicator.classList.add('show');
+    setTimeout(() => hitIndicator.classList.remove('show'), 700);
+}
+
+function animateFace(power) {
+    faceContainer.classList.remove('shake', 'slapped', 'strong-slapped');
+    void faceContainer.offsetWidth;
+    if (power > 70) faceContainer.classList.add('strong-slapped');
+    else if (power > 30) faceContainer.classList.add('slapped');
+    else faceContainer.classList.add('shake');
+}
+
 function createSweatDrops(power) {
-    const dropCount = Math.floor(power / 20) + 2;
-
-    for (let i = 0; i < dropCount; i++) {
+    const count = Math.floor(power / 20) + 2;
+    for (let i = 0; i < count; i++) {
         const drop = document.createElement('div');
         drop.className = 'sweat-drop';
-
-        // Random position on forehead area
         drop.style.left = (30 + Math.random() * 40) + '%';
         drop.style.top = (15 + Math.random() * 15) + '%';
         drop.style.animationDelay = (Math.random() * 0.3) + 's';
-
         sweatContainer.appendChild(drop);
-
         setTimeout(() => drop.remove(), 1500);
     }
 }
 
-// ==================== Tongue System ====================
 function showTongue() {
-    tongue.classList.remove('hide');
-    tongue.classList.add('show');
-
-    setTimeout(() => {
-        tongue.classList.remove('show');
-        tongue.classList.add('hide');
-    }, 2000);
-}
-
-// ==================== Exhaustion System ====================
-function updateExhaustion(power) {
-    // Increase exhaustion based on power
-    gameState.exhaustion = Math.min(gameState.exhaustion + (power / 10), 100);
-
-    // Visual feedback
-    if (gameState.exhaustion > 70) {
-        faceContainer.classList.add('exhausted');
-        createSweatDrops(gameState.exhaustion);
-
-        if (gameState.exhaustion > 90) {
-            showTongue();
-            createDizzyStars();
-        }
-    }
-
-    // Gradual recovery
-    setTimeout(() => {
-        gameState.exhaustion = Math.max(gameState.exhaustion - 5, 0);
-        if (gameState.exhaustion < 70) {
-            faceContainer.classList.remove('exhausted');
-        }
-    }, 2000);
+    tongue.classList.remove('hide'); tongue.classList.add('show');
+    setTimeout(() => { tongue.classList.remove('show'); tongue.classList.add('hide'); }, 2000);
 }
 
 function createDizzyStars() {
     const dizzy = document.createElement('div');
     dizzy.className = 'dizzy-stars show';
-    dizzy.textContent = '⭐✨💫';
+    dizzy.textContent = '⭐✨💫⭐';
     faceContainer.appendChild(dizzy);
-
     setTimeout(() => dizzy.remove(), 3000);
 }
 
-// ==================== Hand Slap Animation ====================
-function animateHand(startX, startY, endX, endY, power) {
-    // Set hand emoji
-    const handEmoji = handSlap.querySelector('.hand-emoji');
-    handEmoji.textContent = handEmojis[gameState.selectedHand];
-
-    // Calculate angle and distance
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-    // Set CSS variables for animation
-    handSlap.style.setProperty('--startX', (startX - 40) + 'px');
-    handSlap.style.setProperty('--startY', (startY - 40) + 'px');
-    handSlap.style.setProperty('--endX', (endX - 40) + 'px');
-    handSlap.style.setProperty('--endY', (endY - 40) + 'px');
-    handSlap.style.setProperty('--rotation', (angle + 90) + 'deg');
-
-    // Trigger animation
-    handSlap.classList.remove('active');
-    void handSlap.offsetWidth; // Force reflow
-    handSlap.classList.add('active');
-
-    // Remove animation class
-    setTimeout(() => {
-        handSlap.classList.remove('active');
-    }, 500);
+function updateExhaustion(power) {
+    gameState.exhaustion = Math.min(gameState.exhaustion + power / 8, 100);
+    if (gameState.exhaustion > 60) { faceContainer.classList.add('exhausted'); createSweatDrops(gameState.exhaustion); }
+    if (gameState.exhaustion > 85) { showTongue(); createDizzyStars(); }
+    setTimeout(() => { gameState.exhaustion = Math.max(gameState.exhaustion - 4, 0); if (gameState.exhaustion < 60) faceContainer.classList.remove('exhausted'); }, 2000);
 }
 
-// ==================== FPS ARM SYSTEM ====================
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let armIdleInterval;
-
-// Mouse tracking
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    updateFPSArm();
-});
-
-// Touch tracking for mobile
-document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 0) {
-        mouseX = e.touches[0].clientX;
-        mouseY = e.touches[0].clientY;
-        updateFPSArm();
-    }
-}, { passive: true });
-
-function updateFPSArm() {
-    if (!fpsArm.classList.contains('punching')) {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-
-        const offsetX = (mouseX - centerX) / 15;
-        const offsetY = (mouseY - centerY) / 15;
-        const rotation = (mouseX - centerX) / 80;
-
-        fpsArm.style.transform = `translateX(${offsetX}px) translateY(${offsetY}px) rotate(${rotation}deg)`;
-    }
-}
-
-// Idle animation
-function startArmIdle() {
-    fpsArm.classList.add('idle');
-}
-
-function stopArmIdle() {
-    fpsArm.classList.remove('idle');
-}
-
-// Punch animation
-function triggerArmPunch() {
-    stopArmIdle();
-    fpsArm.classList.remove('punching');
-    void fpsArm.offsetWidth; // Force reflow
-    fpsArm.classList.add('punching');
-
-    setTimeout(() => {
-        fpsArm.classList.remove('punching');
-        startArmIdle();
-    }, 400);
-}
-
-// Start idle on load
-setTimeout(() => {
-    startArmIdle();
-}, 1000);
-
-// ==================== EYE CALIBRATION SYSTEM ====================
-let calibrationMode = false;
-let eyePositions = { left: null, right: null };
-let clickCount = 0;
-
-eyeCalibrationBtn.addEventListener('click', () => {
-    eyeCalibrationPanel.classList.remove('hidden');
-    calibrationMode = true;
-    clickCount = 0;
-    eyePositions = { left: null, right: null };
-    leftEyePosEl.textContent = '-';
-    rightEyePosEl.textContent = '-';
-});
-
-cancelEyePos.addEventListener('click', () => {
-    eyeCalibrationPanel.classList.add('hidden');
-    calibrationMode = false;
-    clickCount = 0;
-    // Remove markers
-    document.querySelectorAll('.eye-click-marker').forEach(m => m.remove());
-});
-
-saveEyePos.addEventListener('click', () => {
-    if (eyePositions.left && eyePositions.right) {
-        // Update eye positions
-        leftEye.style.left = eyePositions.left.x + '%';
-        leftEye.style.top = eyePositions.left.y + '%';
-        rightEye.style.left = eyePositions.right.x + '%';
-        rightEye.style.top = eyePositions.right.y + '%';
-
-        eyeCalibrationPanel.classList.add('hidden');
-        calibrationMode = false;
-        clickCount = 0;
-        document.querySelectorAll('.eye-click-marker').forEach(m => m.remove());
-    }
-});
-
-// Click handler for eye calibration
-faceContainer.addEventListener('click', (e) => {
-    if (!calibrationMode) return;
-
-    const rect = faceContainer.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    // Create visual marker
-    const marker = document.createElement('div');
-    marker.className = 'eye-click-marker';
-    marker.style.left = e.clientX - rect.left + 'px';
-    marker.style.top = e.clientY - rect.top + 'px';
-    faceContainer.appendChild(marker);
-
-    if (clickCount === 0) {
-        // First click - left eye
-        eyePositions.left = { x: x.toFixed(1), y: y.toFixed(1) };
-        leftEyePosEl.textContent = `${x.toFixed(0)}%, ${y.toFixed(0)}%`;
-        clickCount++;
-    } else if (clickCount === 1) {
-        // Second click - right eye
-        eyePositions.right = { x: x.toFixed(1), y: y.toFixed(1) };
-        rightEyePosEl.textContent = `${x.toFixed(0)}%, ${y.toFixed(0)}%`;
-        clickCount++;
-    }
-});
-
-// ==================== SCREEN SHAKE ====================
-function triggerScreenShake() {
-    container.classList.remove('shake');
-    void container.offsetWidth;
-    container.classList.add('shake');
-
-    setTimeout(() => {
-        container.classList.remove('shake');
-    }, 500);
-}
-
-// ==================== IMPACT WAVE ====================
 function createImpactWave(x, y) {
     const wave = document.createElement('div');
     wave.className = 'impact-wave';
-    wave.style.left = (x - 10) + 'px';
-    wave.style.top = (y - 10) + 'px';
+    wave.style.left = (x - 10) + 'px'; wave.style.top = (y - 10) + 'px';
     document.body.appendChild(wave);
-
     setTimeout(() => wave.remove(), 600);
 }
 
-// ==================== Sound System ====================
-class SoundSystem {
-    constructor() {
-        this.audioContext = null;
-        this.initialized = false;
-    }
-
-    init() {
-        if (this.initialized) return;
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.initialized = true;
-        } catch (e) {
-            console.log('Audio context not supported');
-        }
-    }
-
-    // Create slap sound using Web Audio API
-    playSlap(power) {
-        this.init();
-        if (!this.audioContext) return;
-
-        const duration = 0.15;
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-
-        // Frequency based on power (louder slap = lower pitch)
-        oscillator.frequency.value = 150 - (power * 0.5);
-        oscillator.type = 'triangle';
-
-        // Volume envelope
-        const now = this.audioContext.currentTime;
-        gainNode.gain.setValueAtTime(power / 200, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
-
-        oscillator.start(now);
-        oscillator.stop(now + duration);
-    }
-
-    // Create impact sound
-    playImpact(power) {
-        this.init();
-        if (!this.audioContext) return;
-
-        const duration = 0.1;
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
-
-        oscillator.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-
-        oscillator.frequency.value = 80;
-        oscillator.type = 'sawtooth';
-        filter.type = 'lowpass';
-        filter.frequency.value = 200 + (power * 2);
-
-        const now = this.audioContext.currentTime;
-        gainNode.gain.setValueAtTime(power / 150, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
-
-        oscillator.start(now);
-        oscillator.stop(now + duration);
-    }
+// ==================== GÜÇ HESAPLAMA ====================
+function calculatePower(sx, sy, ex, ey, st, et) {
+    const d = Math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2);
+    const v = d / Math.max(et - st, 1);
+    let p = Math.min(v * 30, 100);
+    if (d > 100) p = Math.min(p * 1.2, 100);
+    // Kombo bonusu
+    if (gameState.combo > 2) p = Math.min(p * (1 + gameState.combo * 0.05), 100);
+    return Math.floor(p);
 }
 
-const soundSystem = new SoundSystem();
-
-// ==================== Particle System ====================
-function createParticles(x, y, power) {
-    const particleCount = Math.floor(power / 8) + 8;
-    const particles = ['⭐', '💥', '💫', '✨', '💦', '💢', '🌟', '✴️', '💨'];
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.textContent = particles[Math.floor(Math.random() * particles.length)];
-
-        // More realistic physics-based trajectory
-        const angle = (Math.random() * Math.PI * 1.5) + (Math.PI * 0.25); // Upward arc
-        const velocity = (50 + Math.random() * power * 2.5);
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity - (Math.random() * 30); // Add upward bias
-        const rotation = (Math.random() * 1080) - 540; // Multiple rotations
-
-        // Random size based on power
-        const size = 18 + Math.random() * (power / 4);
-
-        particle.style.left = x + (Math.random() * 40 - 20) + 'px';
-        particle.style.top = y + (Math.random() * 40 - 20) + 'px';
-        particle.style.setProperty('--tx', tx + 'px');
-        particle.style.setProperty('--ty', ty + 'px');
-        particle.style.setProperty('--rot', rotation + 'deg');
-        particle.style.fontSize = size + 'px';
-
-        // Add subtle delay for more realistic burst effect
-        particle.style.animationDelay = (Math.random() * 0.1) + 's';
-        particle.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
-
-        particleContainer.appendChild(particle);
-
-        // Remove after animation
-        setTimeout(() => {
-            particle.remove();
-        }, 1200);
-    }
-}
-
-// ==================== Visual Effects ====================
-function showRedness(power, hitX, hitY) {
-    const container = faceContainer.getBoundingClientRect();
-    const relativeX = ((hitX / container.width) * 100);
-    const relativeY = ((hitY / container.height) * 100);
-
-    // Create dynamic redness based on hit location
-    const intensity = Math.min(power / 80, 1);
-    redness.style.background = `radial-gradient(circle at ${relativeX}% ${relativeY}%, rgba(255, 0, 0, ${0.7 * intensity}) 0%, rgba(255, 80, 80, ${0.5 * intensity}) 20%, rgba(255, 0, 0, 0) 50%)`;
-    redness.style.opacity = intensity;
-
-    // Fadeout timing based on power
-    const fadeTime = 600 + (power * 8);
-    setTimeout(() => {
-        redness.style.opacity = '0';
-    }, fadeTime);
-}
-
-function blinkEyes() {
-    leftEye.classList.add('blink');
-    rightEye.classList.add('blink');
-
-    setTimeout(() => {
-        leftEye.classList.remove('blink');
-        rightEye.classList.remove('blink');
-    }, 300);
-}
-
-function showHitIndicator(power) {
-    let text = '';
-    if (power < 30) {
-        text = 'PAT! 👋';
-    } else if (power < 60) {
-        text = 'TOKAT! 💥';
-    } else if (power < 90) {
-        text = 'ŞAMAR! 💢';
-    } else {
-        text = 'SÜPER TOKAT! ⭐';
-    }
-
-    hitIndicator.textContent = text;
-    hitIndicator.classList.add('show');
-
-    setTimeout(() => {
-        hitIndicator.classList.remove('show');
-    }, 600);
-}
-
-function animateFace(power) {
-    // Remove previous animations
-    faceContainer.classList.remove('shake', 'slapped', 'strong-slap');
-
-    // Trigger reflow
-    void faceContainer.offsetWidth;
-
-    // Apply appropriate animation based on power
-    if (power > 70) {
-        faceContainer.classList.add('strong-slap');
-    } else if (power > 30) {
-        faceContainer.classList.add('slapped');
-    } else {
-        faceContainer.classList.add('shake');
-    }
-}
-
-// ==================== Power Calculation ====================
-function calculatePower(startX, startY, endX, endY, startTime, endTime) {
-    // Calculate distance
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // Calculate velocity (pixels per millisecond)
-    const timeDelta = Math.max(endTime - startTime, 1);
-    const velocity = distance / timeDelta;
-
-    // Convert to power (0-100 scale)
-    // Velocity threshold: 0.5 = weak, 2+ = strong
-    let power = Math.min(velocity * 30, 100);
-
-    // Boost power if distance is significant
-    if (distance > 100) {
-        power = Math.min(power * 1.2, 100);
-    }
-
-    return Math.floor(power);
-}
-
-// ==================== Slap Handler ====================
+// ==================== ANA TOKAT HANDLER ====================
 function handleSlap(x, y, power) {
     if (gameState.isAnimating) return;
     gameState.isAnimating = true;
 
-    // Update stats
+    // Kombo güncelle
+    updateCombo();
+
+    // Stats güncelle
     gameState.slapCount++;
     gameState.currentPower = power;
-    if (power > gameState.maxPower) {
-        gameState.maxPower = power;
-    }
+    gameState.totalDamage += power;
+    if (power > gameState.maxPower) gameState.maxPower = power;
 
-    // Update UI
+    // UI güncelle
     slapCountEl.textContent = gameState.slapCount;
     maxPowerEl.textContent = gameState.maxPower;
     currentPowerEl.textContent = power + '%';
     powerFill.style.width = power + '%';
 
-    // Visual effects with position-aware redness
+    // Efektler
     animateFace(power);
     showRedness(power, x, y);
     blinkEyes();
     showHitIndicator(power);
     createParticles(x, y, power);
+    showSlapMark(x, y, power);
+    triggerArmSlap(power);
+    soundSystem.playSlap(power);
 
-    // NEW: FPS Effects
-    triggerArmPunch(); // FPS kol animasyonu
-
-    if (power > 40) {
-        triggerScreenShake(); // Ekran sarsıntısı
-    }
-
-    // Impact wave
+    // Hasar sayısı
     const rect = faceContainer.getBoundingClientRect();
-    createImpactWave(rect.left + x, rect.top + y);
+    showDamageNumber(rect.left + x, rect.top + y - 20, power);
 
-    // NEW: Exhaustion and reactions
+    // Yüksek güç efektleri
+    if (power > 40) triggerScreenShake(power);
+    if (power > 50) createSweatDrops(power);
+    createImpactWave(rect.left + x, rect.top + y);
     updateExhaustion(power);
 
-    // Show sweat if power is high
-    if (power > 50) {
-        createSweatDrops(power);
-    }
+    // Ekstra göz kırpma
+    if (Math.random() > 0.4) setTimeout(blinkEyes, 200 + Math.random() * 400);
 
-    // Sound effects
-    soundSystem.playSlap(power);
-    setTimeout(() => soundSystem.playImpact(power), 50);
+    // Power label güncelle
+    if (power < 30) powerLabel.textContent = 'Hafif dokunuş... Daha sert! 💪';
+    else if (power < 60) powerLabel.textContent = 'İyi tokat! Devam et! 👊';
+    else if (power < 85) powerLabel.textContent = 'Acıttı! 😱';
+    else powerLabel.textContent = '🔥 EFSANE TOKAT! 🔥';
 
-    // Random additional blink for realism
-    if (Math.random() > 0.4) {
-        setTimeout(blinkEyes, 200 + Math.random() * 400);
-    }
-
-    // Reset animation lock
+    // Reset
     setTimeout(() => {
         gameState.isAnimating = false;
         powerFill.style.width = '0%';
+        setTimeout(() => { powerLabel.textContent = 'Yüze kaydır ve tokat at! 👋'; }, 1000);
     }, 800);
 }
 
-// ==================== Mouse Events ====================
-let mousePressed = false;
-let mouseStartX = 0;
-let mouseStartY = 0;
-let mouseStartTime = 0;
+// ==================== MOUSE EVENTS ====================
+let mousePressed = false, msx = 0, msy = 0, mst = 0;
 
-faceContainer.addEventListener('mousedown', (e) => {
-    mousePressed = true;
-    mouseStartX = e.clientX;
-    mouseStartY = e.clientY;
-    mouseStartTime = Date.now();
-
-    // Visual feedback
+faceContainer.addEventListener('mousedown', e => {
+    mousePressed = true; msx = e.clientX; msy = e.clientY; mst = Date.now();
     faceContainer.style.cursor = 'grabbing';
 });
 
-document.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', e => {
     if (!mousePressed) return;
-
-    // Show power preview during drag
-    const dx = e.clientX - mouseStartX;
-    const dy = e.clientY - mouseStartY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const timeDelta = Math.max(Date.now() - mouseStartTime, 1);
-    const velocity = distance / timeDelta;
-    const previewPower = Math.min(velocity * 30, 100);
-
-    powerFill.style.width = previewPower + '%';
+    const d = Math.sqrt((e.clientX - msx) ** 2 + (e.clientY - msy) ** 2);
+    const v = d / Math.max(Date.now() - mst, 1);
+    powerFill.style.width = Math.min(v * 30, 100) + '%';
 });
 
-document.addEventListener('mouseup', (e) => {
+document.addEventListener('mouseup', e => {
     if (!mousePressed) return;
     mousePressed = false;
-
-    const endX = e.clientX;
-    const endY = e.clientY;
-    const endTime = Date.now();
-
-    // Calculate power
-    const power = calculatePower(mouseStartX, mouseStartY, endX, endY, mouseStartTime, endTime);
-
-    // Only register as slap if there was movement and minimum power
+    const power = calculatePower(msx, msy, e.clientX, e.clientY, mst, Date.now());
     if (power > 5) {
-        // Animate hand
-        animateHand(mouseStartX, mouseStartY, endX, endY, power);
-
         const rect = faceContainer.getBoundingClientRect();
-        const localX = endX - rect.left;
-        const localY = endY - rect.top;
-        handleSlap(localX, localY, power);
-    } else {
-        powerFill.style.width = '0%';
-    }
-
+        handleSlap(e.clientX - rect.left, e.clientY - rect.top, power);
+    } else { powerFill.style.width = '0%'; }
     faceContainer.style.cursor = 'pointer';
 });
 
-// ==================== Touch Events ====================
-faceContainer.addEventListener('touchstart', (e) => {
+// ==================== TOUCH EVENTS ====================
+faceContainer.addEventListener('touchstart', e => {
     e.preventDefault();
-    const touch = e.touches[0];
-    gameState.touchStart.x = touch.clientX;
-    gameState.touchStart.y = touch.clientY;
-    gameState.touchStart.time = Date.now();
+    const t = e.touches[0];
+    gameState.touchStart = { x: t.clientX, y: t.clientY, time: Date.now() };
+    gameState.touchEnd = { ...gameState.touchStart };
 }, { passive: false });
 
-faceContainer.addEventListener('touchmove', (e) => {
+faceContainer.addEventListener('touchmove', e => {
     e.preventDefault();
-    const touch = e.touches[0];
-    gameState.touchEnd.x = touch.clientX;
-    gameState.touchEnd.y = touch.clientY;
-    gameState.touchEnd.time = Date.now();
-
-    // Show power preview
-    const power = calculatePower(
-        gameState.touchStart.x,
-        gameState.touchStart.y,
-        gameState.touchEnd.x,
-        gameState.touchEnd.y,
-        gameState.touchStart.time,
-        gameState.touchEnd.time
-    );
-
+    const t = e.touches[0];
+    gameState.touchEnd = { x: t.clientX, y: t.clientY, time: Date.now() };
+    const power = calculatePower(gameState.touchStart.x, gameState.touchStart.y, gameState.touchEnd.x, gameState.touchEnd.y, gameState.touchStart.time, gameState.touchEnd.time);
     powerFill.style.width = power + '%';
 }, { passive: false });
 
-faceContainer.addEventListener('touchend', (e) => {
+faceContainer.addEventListener('touchend', e => {
     e.preventDefault();
-
-    const endTime = Date.now();
-    const power = calculatePower(
-        gameState.touchStart.x,
-        gameState.touchStart.y,
-        gameState.touchEnd.x,
-        gameState.touchEnd.y,
-        gameState.touchStart.time,
-        endTime
-    );
-
-    // Only register as slap if there was movement and minimum power
+    const power = calculatePower(gameState.touchStart.x, gameState.touchStart.y, gameState.touchEnd.x, gameState.touchEnd.y, gameState.touchStart.time, Date.now());
     if (power > 5) {
-        // Animate hand
-        animateHand(
-            gameState.touchStart.x,
-            gameState.touchStart.y,
-            gameState.touchEnd.x,
-            gameState.touchEnd.y,
-            power
-        );
-
         const rect = faceContainer.getBoundingClientRect();
-        const localX = gameState.touchEnd.x - rect.left;
-        const localY = gameState.touchEnd.y - rect.top;
-        handleSlap(localX, localY, power);
-    } else {
-        powerFill.style.width = '0%';
-    }
-
-    // Reset touch tracking
+        handleSlap(gameState.touchEnd.x - rect.left, gameState.touchEnd.y - rect.top, power);
+    } else { powerFill.style.width = '0%'; }
     gameState.touchStart = { x: 0, y: 0, time: 0 };
     gameState.touchEnd = { x: 0, y: 0, time: 0 };
 }, { passive: false });
 
-// ==================== Random Eye Blinks ====================
+// ==================== RANDOM BLINKS ====================
 function randomBlink() {
-    if (!gameState.isAnimating) {
-        blinkEyes();
-    }
-
-    // Next blink in 2-5 seconds
-    const nextBlink = 2000 + Math.random() * 3000;
-    setTimeout(randomBlink, nextBlink);
+    if (!gameState.isAnimating && !gameScreen.classList.contains('hidden')) blinkEyes();
+    setTimeout(randomBlink, 2000 + Math.random() * 3000);
 }
-
-// Start random blinking after 3 seconds
 setTimeout(randomBlink, 3000);
 
-// ==================== Initialize ====================
-console.log('🎮 Tokat Atma Oyunu başlatıldı!');
-console.log('👋 Fare veya parmağınızı hızlıca kaydırın!');
-
-// Preload audio context on first user interaction
-document.addEventListener('click', () => {
-    soundSystem.init();
-}, { once: true });
-
-document.addEventListener('touchstart', () => {
-    soundSystem.init();
-}, { once: true });
+// ==================== INIT ====================
+buildMenu();
+document.addEventListener('click', () => soundSystem.init(), { once: true });
+document.addEventListener('touchstart', () => soundSystem.init(), { once: true });
+console.log('🎮 Tokat Atma Oyunu yüklendi!');
